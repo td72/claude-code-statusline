@@ -5,7 +5,7 @@
 # Widgets that return nothing (e.g., agent when not active) are skipped.
 
 [[line]]
-widgets = ["model", "workspace", "agent", "worktree", "vim"]
+widgets = ["model", "workspace", "git_branch", "agent", "worktree", "vim"]
 separator = " | "
 
 [[line]]
@@ -25,6 +25,9 @@ style = "basename"
 
 [widget.agent]
 prefix = "🤖 "
+
+[widget.git_branch]
+prefix = "🌿 "
 
 [widget.worktree]
 prefix = "🌲 "

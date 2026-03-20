@@ -16,6 +16,7 @@ pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
         "workspace" => Some(Box::new(build_workspace_info(cfg))),
         "agent" => Some(Box::new(build_agent_info(cfg))),
         "worktree" => Some(Box::new(build_worktree_info(cfg))),
+        "git_branch" => Some(Box::new(build_git_branch(cfg))),
         "vim" => Some(Box::new(build_vim_status(cfg))),
         "context_usage" => Some(Box::new(build_context_usage(cfg))),
         "cost_summary" => Some(Box::new(build_cost_summary(cfg))),
@@ -99,8 +100,17 @@ fn build_worktree_info(cfg: &WidgetConfig) -> WorktreeInfo {
     }
 }
 
+fn build_git_branch(cfg: &WidgetConfig) -> GitBranch {
+    GitBranch { label: build_label(cfg) }
+}
+
 fn build_vim_status(cfg: &WidgetConfig) -> VimStatus {
-    VimStatus { label: build_label(cfg) }
+    VimStatus {
+        normal_bg: cfg.normal_bg.as_deref().map(parse_color),
+        insert_bg: cfg.insert_bg.as_deref().map(parse_color),
+        normal_fg: cfg.normal_fg.as_deref().map(parse_color),
+        insert_fg: cfg.insert_fg.as_deref().map(parse_color),
+    }
 }
 
 fn build_context_usage(cfg: &WidgetConfig) -> ContextUsage {
