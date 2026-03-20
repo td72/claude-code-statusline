@@ -4,36 +4,57 @@
 # Widgets are rendered in order and joined by the separator.
 # Widgets that return nothing (e.g., agent when not active) are skipped.
 
+# Line 1: Where am I?
 [[line]]
-widgets = ["model", "workspace", "git_branch", "agent", "worktree", "vim"]
+widgets = ["vim", "workspace", "git_branch", "worktree"]
+separator = ""
+
+# Line 2: Model + context
+[[line]]
+widgets = ["model", "context_usage"]
+separator = " "
+
+# Line 3: Session summary
+[[line]]
+widgets = ["cost_summary"]
 separator = " | "
 
+# Line 4: Rate limits
 [[line]]
-widgets = ["context_usage", "cost_summary", "token_alert", "rate_limit_5h"]
-separator = " | "
+widgets = ["rate_limit_5h", "rate_limit_7d"]
+separator = "   "
 
 # Widget configurations
-# Only specify settings you want to override from defaults.
 
-[widget.model]
-color = "cyan"
-bracket = "square"
+# lualine theme: normal=#80d8ff, insert=#c3e88d, fg=#263238
+[widget.vim]
+normal_bg = "117"   # #87d7ff ≈ #80d8ff
+normal_fg = "236"   # #303030 ≈ #263238
+insert_bg = "150"   # #afd787 ≈ #c3e88d
+insert_fg = "236"
 
+# lualine section b: fg=#eeffff bg=#515559
 [widget.workspace]
 prefix = "📁 "
 style = "basename"
+color = "255"
+bg = "240"
 
-[widget.agent]
-prefix = "🤖 "
-
+# lualine section c: fg=#eeffff bg=#2E3C43
 [widget.git_branch]
-prefix = "🌿 "
+prefix = " "
+color = "255"
+bg = "237"    # #3a3a3a ≈ #2E3C43
 
 [widget.worktree]
 prefix = "🌲 "
+color = "255"
+bg = "237"
 
-[widget.vim]
-bracket = "square"
+[widget.model]
+prefix = "🤖 "
+short = true
+color = "255"
 
 [widget.context_usage]
 bar_width = 10
@@ -47,17 +68,21 @@ token_style = "compact"
 red = 90
 yellow = 70
 
-[widget.cost_summary]
-show_lines = true
-
 [widget.token_alert]
 on_text = "⚠"
 on_color = "red"
 
+[widget.cost_summary]
+show_lines = true
+cost_prefix = "💰 "
+duration_prefix = "⏱ "
+lines_prefix = "📝 "
+
 [widget.rate_limit_5h]
 window = "5h"
 bar_width = 5
-prefix = "5h:"
+prefix = "🕐 "
+reset_separator = " ↻"
 
 [widget.rate_limit_5h.thresholds]
 red = 90
@@ -66,4 +91,9 @@ yellow = 70
 [widget.rate_limit_7d]
 window = "7d"
 bar_width = 5
-prefix = "7d:"
+prefix = "📅 "
+reset_separator = " ↻"
+
+[widget.rate_limit_7d.thresholds]
+red = 90
+yellow = 70
