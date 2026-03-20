@@ -1,0 +1,8 @@
+[package]
+name = "claude-code-statusline-widgets"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+claude-code-statusline-model = { path = "../claude-code-statusline-model" }
+claude-code-statusline-components = { path = "../claude-code-statusline-components" }
