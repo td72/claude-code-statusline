@@ -7,12 +7,16 @@ use crate::color::{Color, RESET};
 /// Configuration for label formatting.
 #[derive(Debug, Clone)]
 pub struct Label {
-    /// Optional color for the label text.
+    /// Optional foreground color for the label text.
     pub color: Option<Color>,
+    /// Optional background color for the label.
+    pub bg: Option<Color>,
     /// Bracket style around the label. `None` for no brackets.
     pub bracket: Option<BracketStyle>,
     /// Optional prefix icon/text before the label.
     pub prefix: String,
+    /// Add spaces around the text when bg is set (badge style).
+    pub pad: bool,
 }
 
 /// Bracket style for labels.
@@ -30,8 +34,10 @@ impl Default for Label {
     fn default() -> Self {
         Self {
             color: None,
+            bg: None,
             bracket: None,
             prefix: String::new(),
+            pad: false,
         }
     }
 }
@@ -52,13 +58,24 @@ impl Label {
             None => text.to_string(),
         };
 
-        match self.color {
-            Some(color) => {
-                out.push_str(&color.fg_string());
-                out.push_str(&wrapped);
-                out.push_str(RESET);
+        let has_color = self.color.is_some() || self.bg.is_some();
+        if has_color {
+            if let Some(bg) = self.bg {
+                out.push_str(&bg.bg_string());
             }
-            None => out.push_str(&wrapped),
+            if let Some(fg) = self.color {
+                out.push_str(&fg.fg_string());
+            }
+            if self.pad {
+                out.push(' ');
+            }
+            out.push_str(&wrapped);
+            if self.pad {
+                out.push(' ');
+            }
+            out.push_str(RESET);
+        } else {
+            out.push_str(&wrapped);
         }
 
         out

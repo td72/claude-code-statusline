@@ -31,10 +31,13 @@ pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
 }
 
 fn build_label(cfg: &WidgetConfig) -> Label {
+    let has_bg = cfg.bg.is_some();
     Label {
         color: cfg.color.as_deref().map(parse_color),
+        bg: cfg.bg.as_deref().map(parse_color),
         bracket: cfg.bracket.as_deref().and_then(parse_bracket),
         prefix: cfg.prefix.clone().unwrap_or_default(),
+        pad: has_bg,
     }
 }
 

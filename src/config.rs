@@ -34,6 +34,7 @@ fn default_separator() -> String {
 pub struct WidgetConfig {
     // Label-style options
     pub color: Option<String>,
+    pub bg: Option<String>,
     pub bracket: Option<String>,
     pub prefix: Option<String>,
 
