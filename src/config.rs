@@ -54,6 +54,9 @@ pub struct WidgetConfig {
 
     // CostSummary options
     pub show_lines: Option<bool>,
+    pub cost_prefix: Option<String>,
+    pub duration_prefix: Option<String>,
+    pub lines_prefix: Option<String>,
 
     // Indicator options
     pub on_text: Option<String>,

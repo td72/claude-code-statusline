@@ -142,6 +142,9 @@ fn build_cost_summary(cfg: &WidgetConfig) -> CostSummary {
     };
     CostSummary {
         line_count,
+        cost_prefix: cfg.cost_prefix.clone().unwrap_or_default(),
+        duration_prefix: cfg.duration_prefix.clone().unwrap_or_default(),
+        lines_prefix: cfg.lines_prefix.clone().unwrap_or_default(),
         ..Default::default()
     }
 }

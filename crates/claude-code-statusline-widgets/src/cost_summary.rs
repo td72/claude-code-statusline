@@ -17,6 +17,12 @@ pub struct CostSummary {
     pub line_count: Option<Count>,
     /// Separator between parts.
     pub separator: String,
+    /// Prefix for cost (e.g., "💰 ").
+    pub cost_prefix: String,
+    /// Prefix for duration (e.g., "⏱ ").
+    pub duration_prefix: String,
+    /// Prefix for lines changed (e.g., "📝 ").
+    pub lines_prefix: String,
 }
 
 impl Default for CostSummary {
@@ -26,6 +32,9 @@ impl Default for CostSummary {
             duration: Duration::default(),
             line_count: None,
             separator: " | ".to_string(),
+            cost_prefix: String::new(),
+            duration_prefix: String::new(),
+            lines_prefix: String::new(),
         }
     }
 }
@@ -34,14 +43,14 @@ impl Widget for CostSummary {
     fn render(&self, input: &StatusLineInput) -> Option<String> {
         let cost = &input.cost;
         let mut parts = vec![
-            self.currency.render(cost.total_cost_usd),
-            self.duration.render(cost.total_duration_ms),
+            format!("{}{}", self.cost_prefix, self.currency.render(cost.total_cost_usd)),
+            format!("{}{}", self.duration_prefix, self.duration.render(cost.total_duration_ms)),
         ];
 
         if let Some(count) = &self.line_count {
             let added = Count { prefix: "+".into(), ..count.clone() }.render(cost.total_lines_added);
             let removed = Count { prefix: "-".into(), ..count.clone() }.render(cost.total_lines_removed);
-            parts.push(format!("{added} {removed}"));
+            parts.push(format!("{}{added} {removed}", self.lines_prefix));
         }
 
         Some(parts.join(&self.separator))
