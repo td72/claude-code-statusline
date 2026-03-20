@@ -53,6 +53,12 @@ pub struct StatusLineInput {
     /// Worktree information. Only present during `--worktree` sessions.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub worktree: Option<Worktree>,
+
+    /// Rate limit usage for Claude.ai. Only present for Claude.ai users.
+    ///
+    /// Added in v2.1.80.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rate_limits: Option<RateLimits>,
 }
 
 /// Current model identifier and display name.
@@ -74,6 +80,12 @@ pub struct Workspace {
     /// Directory where Claude Code was launched.
     /// May differ from `current_dir` if the working directory changes during a session.
     pub project_dir: String,
+
+    /// Directories added via `/add-dir`.
+    ///
+    /// Added in v2.1.47.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub added_dirs: Option<Vec<String>>,
 }
 
 /// Current output style configuration.
@@ -190,6 +202,30 @@ pub struct Worktree {
     pub original_branch: Option<String>,
 }
 
+/// Rate limit usage for Claude.ai.
+///
+/// Added in v2.1.80.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RateLimits {
+    /// 5-hour rolling window rate limit.
+    #[serde(rename = "5h")]
+    pub five_hour: RateLimitWindow,
+
+    /// 7-day rolling window rate limit.
+    #[serde(rename = "7d")]
+    pub seven_day: RateLimitWindow,
+}
+
+/// A single rate limit window.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RateLimitWindow {
+    /// Percentage of the rate limit used.
+    pub used_percentage: f64,
+
+    /// ISO 8601 timestamp when the rate limit resets.
+    pub resets_at: String,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -206,7 +242,8 @@ mod tests {
             },
             "workspace": {
                 "current_dir": "/current/working/directory",
-                "project_dir": "/original/project/directory"
+                "project_dir": "/original/project/directory",
+                "added_dirs": ["/extra/dir1", "/extra/dir2"]
             },
             "version": "1.0.80",
             "output_style": {
@@ -245,6 +282,16 @@ mod tests {
                 "branch": "worktree-my-feature",
                 "original_cwd": "/path/to/project",
                 "original_branch": "main"
+            },
+            "rate_limits": {
+                "5h": {
+                    "used_percentage": 42.5,
+                    "resets_at": "2026-03-20T15:00:00Z"
+                },
+                "7d": {
+                    "used_percentage": 10.2,
+                    "resets_at": "2026-03-27T00:00:00Z"
+                }
             }
         }"#;
 
@@ -265,9 +312,19 @@ mod tests {
         let agent = input.agent.unwrap();
         assert_eq!(agent.name, "security-reviewer");
 
+        assert_eq!(
+            input.workspace.added_dirs,
+            Some(vec!["/extra/dir1".to_string(), "/extra/dir2".to_string()])
+        );
+
         let worktree = input.worktree.unwrap();
         assert_eq!(worktree.name, "my-feature");
         assert_eq!(worktree.branch, Some("worktree-my-feature".to_string()));
+
+        let rate_limits = input.rate_limits.unwrap();
+        assert_eq!(rate_limits.five_hour.used_percentage, 42.5);
+        assert_eq!(rate_limits.five_hour.resets_at, "2026-03-20T15:00:00Z");
+        assert_eq!(rate_limits.seven_day.used_percentage, 10.2);
     }
 
     #[test]
@@ -303,6 +360,8 @@ mod tests {
         assert!(input.vim.is_none());
         assert!(input.agent.is_none());
         assert!(input.worktree.is_none());
+        assert!(input.rate_limits.is_none());
+        assert!(input.workspace.added_dirs.is_none());
         assert!(input.context_window.used_percentage.is_none());
         assert!(input.context_window.current_usage.is_none());
     }
@@ -320,6 +379,7 @@ mod tests {
             workspace: Workspace {
                 current_dir: "/test".to_string(),
                 project_dir: "/test".to_string(),
+                added_dirs: None,
             },
             version: "1.0.0".to_string(),
             output_style: OutputStyle {
@@ -344,6 +404,7 @@ mod tests {
             vim: None,
             agent: None,
             worktree: None,
+            rate_limits: None,
         };
 
         let json = serde_json::to_string(&input).unwrap();
