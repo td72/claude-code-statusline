@@ -208,11 +208,9 @@ pub struct Worktree {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RateLimits {
     /// 5-hour rolling window rate limit.
-    #[serde(rename = "5h")]
     pub five_hour: RateLimitWindow,
 
     /// 7-day rolling window rate limit.
-    #[serde(rename = "7d")]
     pub seven_day: RateLimitWindow,
 }
 
@@ -222,8 +220,8 @@ pub struct RateLimitWindow {
     /// Percentage of the rate limit used.
     pub used_percentage: f64,
 
-    /// ISO 8601 timestamp when the rate limit resets.
-    pub resets_at: String,
+    /// Unix timestamp (seconds) when the rate limit resets.
+    pub resets_at: i64,
 }
 
 #[cfg(test)]
@@ -284,13 +282,13 @@ mod tests {
                 "original_branch": "main"
             },
             "rate_limits": {
-                "5h": {
+                "five_hour": {
                     "used_percentage": 42.5,
-                    "resets_at": "2026-03-20T15:00:00Z"
+                    "resets_at": 1774029600
                 },
-                "7d": {
+                "seven_day": {
                     "used_percentage": 10.2,
-                    "resets_at": "2026-03-27T00:00:00Z"
+                    "resets_at": 1774634400
                 }
             }
         }"#;
@@ -323,7 +321,7 @@ mod tests {
 
         let rate_limits = input.rate_limits.unwrap();
         assert_eq!(rate_limits.five_hour.used_percentage, 42.5);
-        assert_eq!(rate_limits.five_hour.resets_at, "2026-03-20T15:00:00Z");
+        assert_eq!(rate_limits.five_hour.resets_at, 1774029600);
         assert_eq!(rate_limits.seven_day.used_percentage, 10.2);
     }
 
