@@ -3,6 +3,7 @@
 /// ANSI color codes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Color {
+    Black,
     Red,
     Green,
     Yellow,
@@ -18,6 +19,7 @@ impl Color {
     /// Returns the ANSI escape sequence to set this foreground color.
     pub fn fg(self) -> &'static str {
         match self {
+            Color::Black => "\x1b[30m",
             Color::Red => "\x1b[31m",
             Color::Green => "\x1b[32m",
             Color::Yellow => "\x1b[33m",
@@ -35,6 +37,29 @@ impl Color {
         match self {
             Color::Ansi256(n) => format!("\x1b[38;5;{n}m"),
             other => other.fg().to_string(),
+        }
+    }
+
+    /// Returns the ANSI escape sequence to set this background color.
+    pub fn bg(self) -> &'static str {
+        match self {
+            Color::Black => "\x1b[40m",
+            Color::Red => "\x1b[41m",
+            Color::Green => "\x1b[42m",
+            Color::Yellow => "\x1b[43m",
+            Color::Blue => "\x1b[44m",
+            Color::Magenta => "\x1b[45m",
+            Color::Cyan => "\x1b[46m",
+            Color::White => "\x1b[47m",
+            Color::Ansi256(_) => "", // handled by bg_string
+        }
+    }
+
+    /// Returns the background ANSI escape sequence as an owned string.
+    pub fn bg_string(self) -> String {
+        match self {
+            Color::Ansi256(n) => format!("\x1b[48;5;{n}m"),
+            other => other.bg().to_string(),
         }
     }
 }

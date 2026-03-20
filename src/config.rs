@@ -59,6 +59,12 @@ pub struct WidgetConfig {
     pub off_text: Option<String>,
     pub on_color: Option<String>,
 
+    // VimStatus options
+    pub normal_bg: Option<String>,
+    pub insert_bg: Option<String>,
+    pub normal_fg: Option<String>,
+    pub insert_fg: Option<String>,
+
     // RateLimit options
     pub window: Option<String>,
 
@@ -77,6 +83,7 @@ pub struct ThresholdConfig {
 
 pub fn parse_color(s: &str) -> Color {
     match s {
+        "black" => Color::Black,
         "red" => Color::Red,
         "green" => Color::Green,
         "yellow" => Color::Yellow,
@@ -84,7 +91,7 @@ pub fn parse_color(s: &str) -> Color {
         "cyan" => Color::Cyan,
         "magenta" => Color::Magenta,
         "white" => Color::White,
-        _ => Color::White,
+        n => n.parse::<u8>().map(Color::Ansi256).unwrap_or(Color::White),
     }
 }
 

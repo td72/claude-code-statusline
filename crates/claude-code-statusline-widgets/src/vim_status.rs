@@ -1,20 +1,29 @@
 //! Vim mode status widget.
 
-use claude_code_statusline_components::label::Label;
+use claude_code_statusline_components::color::{Color, RESET};
 use claude_code_statusline_model::StatusLineInput;
 
 use crate::Widget;
 
 /// Widget for displaying the current vim mode.
 pub struct VimStatus {
-    /// Label formatter.
-    pub label: Label,
+    /// Background color for NORMAL mode.
+    pub normal_bg: Option<Color>,
+    /// Background color for INSERT mode.
+    pub insert_bg: Option<Color>,
+    /// Foreground color for NORMAL mode.
+    pub normal_fg: Option<Color>,
+    /// Foreground color for INSERT mode.
+    pub insert_fg: Option<Color>,
 }
 
 impl Default for VimStatus {
     fn default() -> Self {
         Self {
-            label: Label::default(),
+            normal_bg: None,
+            insert_bg: None,
+            normal_fg: None,
+            insert_fg: None,
         }
     }
 }
@@ -22,11 +31,28 @@ impl Default for VimStatus {
 impl Widget for VimStatus {
     fn render(&self, input: &StatusLineInput) -> Option<String> {
         let vim = input.vim.as_ref()?;
-        let mode_str = match vim.mode {
-            claude_code_statusline_model::VimMode::Normal => "NORMAL",
-            claude_code_statusline_model::VimMode::Insert => "INSERT",
+        let (mode_str, bg, fg) = match vim.mode {
+            claude_code_statusline_model::VimMode::Normal => ("NORMAL", &self.normal_bg, &self.normal_fg),
+            claude_code_statusline_model::VimMode::Insert => ("INSERT", &self.insert_bg, &self.insert_fg),
         };
-        Some(self.label.render(mode_str))
+
+        let has_color = bg.is_some() || fg.is_some();
+        if !has_color {
+            return Some(mode_str.to_string());
+        }
+
+        let mut out = String::new();
+        if let Some(bg) = bg {
+            out.push_str(&bg.bg_string());
+        }
+        if let Some(fg) = fg {
+            out.push_str(&fg.fg_string());
+        }
+        out.push(' ');
+        out.push_str(mode_str);
+        out.push(' ');
+        out.push_str(RESET);
+        Some(out)
     }
 }
 
@@ -72,17 +98,37 @@ mod tests {
     }
 
     #[test]
-    fn renders_normal() {
+    fn renders_normal_plain() {
         let w = VimStatus::default();
         let input = make_input(Some(Vim { mode: VimMode::Normal }));
         assert_eq!(w.render(&input).unwrap(), "NORMAL");
     }
 
     #[test]
-    fn renders_insert() {
+    fn renders_insert_plain() {
         let w = VimStatus::default();
         let input = make_input(Some(Vim { mode: VimMode::Insert }));
         assert_eq!(w.render(&input).unwrap(), "INSERT");
+    }
+
+    #[test]
+    fn renders_with_bg_colors() {
+        let w = VimStatus {
+            normal_bg: Some(Color::Blue),
+            insert_bg: Some(Color::Green),
+            normal_fg: Some(Color::White),
+            insert_fg: Some(Color::White),
+        };
+
+        let input_normal = make_input(Some(Vim { mode: VimMode::Normal }));
+        let result = w.render(&input_normal).unwrap();
+        assert!(result.contains("\x1b[44m")); // blue bg
+        assert!(result.contains(" NORMAL "));
+
+        let input_insert = make_input(Some(Vim { mode: VimMode::Insert }));
+        let result = w.render(&input_insert).unwrap();
+        assert!(result.contains("\x1b[42m")); // green bg
+        assert!(result.contains(" INSERT "));
     }
 
     #[test]
