@@ -1,0 +1,66 @@
+# claude-code-statusline default configuration
+#
+# Each [[line]] defines a row in the status line output.
+# Widgets are rendered in order and joined by the separator.
+# Widgets that return nothing (e.g., agent when not active) are skipped.
+
+[[line]]
+widgets = ["model", "workspace", "agent", "worktree", "vim"]
+separator = " | "
+
+[[line]]
+widgets = ["context_usage", "cost_summary", "token_alert", "rate_limit_5h"]
+separator = " | "
+
+# Widget configurations
+# Only specify settings you want to override from defaults.
+
+[widget.model]
+color = "cyan"
+bracket = "square"
+
+[widget.workspace]
+prefix = "📁 "
+style = "basename"
+
+[widget.agent]
+prefix = "🤖 "
+
+[widget.worktree]
+prefix = "🌲 "
+
+[widget.vim]
+bracket = "square"
+
+[widget.context_usage]
+bar_width = 10
+filled_char = "█"
+empty_char = "░"
+show_label = true
+show_tokens = true
+token_style = "compact"
+
+[widget.context_usage.thresholds]
+red = 90
+yellow = 70
+
+[widget.cost_summary]
+show_lines = true
+
+[widget.token_alert]
+on_text = "⚠"
+on_color = "red"
+
+[widget.rate_limit_5h]
+window = "5h"
+bar_width = 5
+prefix = "5h:"
+
+[widget.rate_limit_5h.thresholds]
+red = 90
+yellow = 70
+
+[widget.rate_limit_7d]
+window = "7d"
+bar_width = 5
+prefix = "7d:"
