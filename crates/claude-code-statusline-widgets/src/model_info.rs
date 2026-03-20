@@ -9,19 +9,31 @@ use crate::Widget;
 pub struct ModelInfo {
     /// Label formatter.
     pub label: Label,
+    /// Remove parenthesized suffixes like "(1M context)" from display name.
+    pub short: bool,
 }
 
 impl Default for ModelInfo {
     fn default() -> Self {
         Self {
             label: Label::default(),
+            short: false,
         }
     }
 }
 
 impl Widget for ModelInfo {
     fn render(&self, input: &StatusLineInput) -> Option<String> {
-        Some(self.label.render(&input.model.display_name))
+        let name = if self.short {
+            input.model.display_name
+                .split('(')
+                .next()
+                .unwrap_or(&input.model.display_name)
+                .trim()
+        } else {
+            &input.model.display_name
+        };
+        Some(self.label.render(name))
     }
 }
 
@@ -78,8 +90,16 @@ mod tests {
     fn renders_bracketed() {
         let w = ModelInfo {
             label: Label { bracket: Some(BracketStyle::Square), ..Default::default() },
+            short: false,
         };
         let input = make_input("Sonnet");
         assert_eq!(w.render(&input).unwrap(), "[Sonnet]");
+    }
+
+    #[test]
+    fn renders_short() {
+        let w = ModelInfo { short: true, ..Default::default() };
+        let input = make_input("Opus 4.6 (1M context)");
+        assert_eq!(w.render(&input).unwrap(), "Opus 4.6");
     }
 }

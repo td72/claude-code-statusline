@@ -38,6 +38,9 @@ pub struct WidgetConfig {
     pub bracket: Option<String>,
     pub prefix: Option<String>,
 
+    // ModelInfo options
+    pub short: Option<bool>,
+
     // Path options
     pub style: Option<String>,
     pub home_dir: Option<String>,

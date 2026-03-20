@@ -75,7 +75,10 @@ fn build_progress_bar(cfg: &WidgetConfig) -> ProgressBar {
 }
 
 fn build_model_info(cfg: &WidgetConfig) -> ModelInfo {
-    ModelInfo { label: build_label(cfg) }
+    ModelInfo {
+        label: build_label(cfg),
+        short: cfg.short.unwrap_or(false),
+    }
 }
 
 fn build_workspace_info(cfg: &WidgetConfig) -> WorkspaceInfo {
