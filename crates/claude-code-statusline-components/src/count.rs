@@ -1,6 +1,10 @@
 //! Count component for integer values.
 //!
-//! Used for: token counts, `cost.total_lines_added`, `cost.total_lines_removed`
+//! Formats a `u64` in one of three styles (plain, comma-separated, or compact
+//! with SI suffixes) and wraps it with an optional prefix and suffix.
+//!
+//! Typical data sources: token counts, `cost.total_lines_added`,
+//! `cost.total_lines_removed`.
 
 /// Formatting style for count values.
 #[derive(Debug, Clone, Default)]
@@ -15,6 +19,15 @@ pub enum CountStyle {
 }
 
 /// Configuration for count formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::count::{Count, CountStyle};
+///
+/// let c = Count { style: CountStyle::Compact, prefix: "+".into(), suffix: " lines".into() };
+/// assert_eq!(c.render(1_500), "+1.50k lines");
+/// ```
 #[derive(Debug, Clone)]
 pub struct Count {
     /// Formatting style.
@@ -36,7 +49,8 @@ impl Default for Count {
 }
 
 impl Count {
-    /// Render a count value.
+    /// Render a count value according to the configured [`CountStyle`],
+    /// prefixed and suffixed as configured.
     pub fn render(&self, value: u64) -> String {
         let formatted = match &self.style {
             CountStyle::Plain => value.to_string(),

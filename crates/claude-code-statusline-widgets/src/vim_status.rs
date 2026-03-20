@@ -1,4 +1,8 @@
 //! Vim mode status widget.
+//!
+//! Displays the current vim mode (`NORMAL` or `INSERT`) with optional
+//! per-mode foreground and background colors. Returns `None` when vim
+//! mode is not enabled.
 
 use claude_code_statusline_components::color::{Color, RESET};
 use claude_code_statusline_model::StatusLineInput;
@@ -6,6 +10,9 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying the current vim mode.
+///
+/// Returns `None` when vim mode is not enabled.
+/// When no colors are configured, the mode string is rendered as plain text.
 pub struct VimStatus {
     /// Background color for NORMAL mode.
     pub normal_bg: Option<Color>,

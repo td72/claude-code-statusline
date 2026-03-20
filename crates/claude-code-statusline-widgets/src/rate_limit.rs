@@ -1,4 +1,8 @@
 //! Rate limit usage widget.
+//!
+//! Displays a progress bar for the rate limit percentage and a countdown
+//! to the reset time. Returns `None` when the input has no `rate_limits`
+//! (i.e., the user is not on Claude.ai).
 
 use claude_code_statusline_components::countdown::Countdown;
 use claude_code_statusline_components::progress_bar::ProgressBar;
@@ -7,6 +11,8 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying rate limit usage.
+///
+/// Returns `None` when `rate_limits` is absent from the input.
 pub struct RateLimit {
     /// Progress bar for the usage percentage.
     pub bar: ProgressBar,
@@ -41,6 +47,9 @@ impl Default for RateLimit {
 
 impl RateLimit {
     /// Render with an explicit `now` timestamp (Unix seconds).
+    ///
+    /// This is the testable entry point; the [`Widget::render`] implementation
+    /// calls this with the current system time.
     pub fn render_with_now(&self, input: &StatusLineInput, now_epoch_secs: i64) -> Option<String> {
         let limits = input.rate_limits.as_ref()?;
         let window = match &self.window {

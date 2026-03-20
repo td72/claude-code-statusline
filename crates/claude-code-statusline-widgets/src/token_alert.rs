@@ -1,4 +1,8 @@
 //! Token threshold alert widget.
+//!
+//! Displays a warning indicator when the total token count from the most
+//! recent API response exceeds 200k tokens. Returns `None` when the
+//! threshold is not exceeded.
 
 use claude_code_statusline_components::indicator::Indicator;
 use claude_code_statusline_model::StatusLineInput;
@@ -6,6 +10,9 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying the 200k token threshold alert.
+///
+/// Returns `None` when `exceeds_200k_tokens` is `false` and the
+/// indicator's `off_text` is empty (the default).
 pub struct TokenAlert {
     /// Indicator formatter.
     pub indicator: Indicator,

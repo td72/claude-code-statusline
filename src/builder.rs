@@ -1,3 +1,8 @@
+//! Widget builder: translates TOML [`WidgetConfig`] into concrete widget instances.
+//!
+//! Each `build_*` function reads the flat option bag in [`WidgetConfig`] and
+//! constructs the corresponding widget struct with its component configuration.
+
 use claude_code_statusline_components::color::{Color, Threshold};
 use claude_code_statusline_components::count::{Count, CountStyle};
 use claude_code_statusline_components::indicator::Indicator;
@@ -9,7 +14,16 @@ use claude_code_statusline_widgets::*;
 
 use crate::config::{parse_bracket, parse_color, WidgetConfig};
 
-/// Build a boxed Widget from a widget name and its config.
+/// Build a boxed [`Widget`] from a widget name and its configuration.
+///
+/// Returns `None` (and prints to stderr) if `name` is not a recognized
+/// widget identifier.
+///
+/// # Recognized names
+///
+/// `"model"`, `"workspace"`, `"agent"`, `"worktree"`, `"git_branch"`,
+/// `"vim"`, `"context_usage"`, `"cost_summary"`, `"token_alert"`,
+/// `"rate_limit_5h"`, `"rate_limit_7d"`.
 pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
     match name {
         "model" => Some(Box::new(build_model_info(cfg))),

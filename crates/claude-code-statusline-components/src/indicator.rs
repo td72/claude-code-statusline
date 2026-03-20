@@ -1,10 +1,24 @@
 //! Indicator component for boolean flag values.
 //!
-//! Used for: `exceeds_200k_tokens`
+//! Renders a boolean as a configurable on/off text or icon, optionally
+//! colored. When the `off_text` is empty and the value is `false`, the
+//! indicator produces an empty string so it can be hidden from output.
+//!
+//! Typical data source: `exceeds_200k_tokens`.
 
 use crate::color::{Color, RESET};
 
 /// Configuration for indicator formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::indicator::Indicator;
+///
+/// let ind = Indicator::default();
+/// assert!(!ind.render(true).is_empty());
+/// assert!(ind.render(false).is_empty());
+/// ```
 #[derive(Debug, Clone)]
 pub struct Indicator {
     /// Text/icon to show when `true`.

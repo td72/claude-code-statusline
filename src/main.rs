@@ -1,3 +1,10 @@
+//! Entry point for the `claude-code-statusline` binary.
+//!
+//! Reads a JSON payload from stdin (provided by Claude Code), loads a TOML
+//! configuration file that describes which widgets to render on each line,
+//! builds the widgets via [`builder::build_widget`], and prints the rendered
+//! lines to stdout.
+
 mod builder;
 mod config;
 

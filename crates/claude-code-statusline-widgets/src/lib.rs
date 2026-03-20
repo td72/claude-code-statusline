@@ -1,8 +1,25 @@
 //! High-level widgets that map [`StatusLineInput`] fields to rendered output.
 //!
-//! Each widget combines one or more components from
+//! Each widget combines one or more low-level components from
 //! [`claude_code_statusline_components`] to render a meaningful unit of
-//! status line information.
+//! status line information.  Widgets implement the [`Widget`] trait, which
+//! takes a reference to [`StatusLineInput`] and returns `Option<String>` --
+//! `None` when the required data is absent (e.g., no active worktree).
+//!
+//! # Available widgets
+//!
+//! | Widget            | Renders                                      |
+//! |-------------------|----------------------------------------------|
+//! | [`ModelInfo`]      | Model display name                           |
+//! | [`WorkspaceInfo`]  | Current working directory                    |
+//! | [`AgentInfo`]      | Active agent name                            |
+//! | [`WorktreeInfo`]   | Worktree branch/name                         |
+//! | [`GitBranch`]      | Current git branch (via `git` CLI)           |
+//! | [`VimStatus`]      | Vim mode indicator                           |
+//! | [`ContextUsage`]   | Context window progress bar                  |
+//! | [`CostSummary`]    | Session cost, duration, and lines changed    |
+//! | [`TokenAlert`]     | 200k-token threshold warning                 |
+//! | [`RateLimit`]      | Rate limit usage bar and reset countdown     |
 
 use claude_code_statusline_model::StatusLineInput;
 
@@ -32,7 +49,12 @@ pub use worktree_info::WorktreeInfo;
 ///
 /// A widget reads relevant fields from [`StatusLineInput`] and produces
 /// a rendered string using one or more components.
-/// Returns `None` if the required data is absent.
+/// Returns `None` if the required data is absent (e.g., when vim mode
+/// is not enabled, the `VimStatus` widget returns `None`).
 pub trait Widget {
+    /// Render this widget for the given input.
+    ///
+    /// Returns `Some(rendered_string)` on success, or `None` if the
+    /// widget's required data is not present in `input`.
     fn render(&self, input: &StatusLineInput) -> Option<String>;
 }

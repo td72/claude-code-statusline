@@ -1,8 +1,21 @@
-//! Countdown component for timestamp values.
+//! Countdown component for Unix timestamp values.
 //!
-//! Used for: `rate_limits.*.resets_at`
+//! Computes the difference between a target timestamp and "now", and renders
+//! the remaining time in a human-readable form such as `"2h 30m"` or `"3d 5h"`.
+//!
+//! Typical data source: `rate_limits.*.resets_at`.
 
 /// Configuration for countdown formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::countdown::Countdown;
+///
+/// let c = Countdown::default();
+/// // 2 hours remaining
+/// assert_eq!(c.render(1000, 1000 + 7200), "2h 0m");
+/// ```
 #[derive(Debug, Clone)]
 pub struct Countdown {
     /// Text to show when the timestamp is in the past.

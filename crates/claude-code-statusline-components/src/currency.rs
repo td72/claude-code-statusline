@@ -1,8 +1,19 @@
-//! Currency component for USD values.
+//! Currency component for monetary values.
 //!
-//! Used for: `cost.total_cost_usd`
+//! Formats a floating-point amount with a configurable currency symbol and
+//! decimal precision.
+//!
+//! Typical data source: `cost.total_cost_usd`.
 
 /// Configuration for currency formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::currency::Currency;
+///
+/// assert_eq!(Currency::default().render(0.05), "$0.05");
+/// ```
 #[derive(Debug, Clone)]
 pub struct Currency {
     /// Currency symbol prefix.
@@ -21,7 +32,10 @@ impl Default for Currency {
 }
 
 impl Currency {
-    /// Render a USD value as a formatted currency string.
+    /// Render a monetary value as a formatted currency string.
+    ///
+    /// The output is `"{symbol}{value}"` with the configured number of
+    /// decimal places.
     pub fn render(&self, value: f64) -> String {
         format!("{}{:.*}", self.symbol, self.decimals, value)
     }

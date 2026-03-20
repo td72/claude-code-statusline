@@ -1,4 +1,7 @@
 //! Model information widget.
+//!
+//! Displays the current model's display name, optionally stripping
+//! parenthesized suffixes (e.g., `"(1M context)"`) for a shorter label.
 
 use claude_code_statusline_components::label::Label;
 use claude_code_statusline_model::StatusLineInput;
@@ -6,6 +9,8 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying the current model name.
+///
+/// Always returns `Some` because the model field is always present.
 pub struct ModelInfo {
     /// Label formatter.
     pub label: Label,

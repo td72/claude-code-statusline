@@ -1,8 +1,12 @@
 //! Path component for file/directory path values.
 //!
-//! Used for: `workspace.current_dir`, `workspace.project_dir`, `worktree.path`, etc.
+//! Formats a filesystem path string in one of three styles: full, basename
+//! only, or home-directory shortened (replacing the home prefix with `~`).
+//!
+//! Typical data sources: `workspace.current_dir`, `workspace.project_dir`,
+//! `worktree.path`.
 
-/// Path display style.
+/// Path display style controlling how much of the path is shown.
 #[derive(Debug, Clone, Default)]
 pub enum PathStyle {
     /// Full path: `/home/user/projects/myapp`
@@ -15,6 +19,15 @@ pub enum PathStyle {
 }
 
 /// Configuration for path formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::path::{Path, PathStyle};
+///
+/// let p = Path::default(); // BaseName style
+/// assert_eq!(p.render("/home/user/myapp"), "myapp");
+/// ```
 #[derive(Debug, Clone)]
 pub struct Path {
     /// Display style.
@@ -37,7 +50,9 @@ impl Default for Path {
 }
 
 impl Path {
-    /// Render a path string.
+    /// Render a path string according to the configured [`PathStyle`].
+    ///
+    /// If a `prefix` is set, it is prepended to the formatted path.
     pub fn render(&self, path: &str) -> String {
         let formatted = match &self.style {
             PathStyle::Full => path.to_string(),

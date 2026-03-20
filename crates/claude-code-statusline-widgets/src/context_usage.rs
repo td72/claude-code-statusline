@@ -1,6 +1,8 @@
 //! Context window usage widget.
 //!
-//! Renders context window usage as a progress bar with optional token counts.
+//! Renders `context_window.used_percentage` as a progress bar, optionally
+//! appending a token usage ratio (e.g., `"20.0k/200k"`) derived from
+//! `current_usage` and `context_window_size`.
 
 use claude_code_statusline_components::count::Count;
 use claude_code_statusline_components::progress_bar::ProgressBar;
@@ -9,6 +11,9 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying context window usage.
+///
+/// Always returns `Some` because context window data is always present;
+/// a missing `used_percentage` defaults to `0%`.
 pub struct ContextUsage {
     /// Progress bar for the usage percentage.
     pub bar: ProgressBar,

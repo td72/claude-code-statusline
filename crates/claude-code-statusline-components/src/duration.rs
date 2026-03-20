@@ -1,8 +1,20 @@
 //! Duration component for millisecond values.
 //!
-//! Used for: `cost.total_duration_ms`, `cost.total_api_duration_ms`
+//! Converts a raw millisecond count into a compact, human-readable string
+//! such as `"45s"`, `"2m 5s"`, or `"1h 1m"`.
+//!
+//! Typical data sources: `cost.total_duration_ms`, `cost.total_api_duration_ms`.
 
 /// Configuration for duration formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::duration::Duration;
+///
+/// let d = Duration::default();
+/// assert_eq!(d.render(125_000), "2m 5s");
+/// ```
 #[derive(Debug, Clone)]
 pub struct Duration {
     /// Whether to show seconds when duration >= 1 hour.

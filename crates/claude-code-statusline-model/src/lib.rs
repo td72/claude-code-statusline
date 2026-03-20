@@ -1,11 +1,30 @@
 //! Serde model definitions for the Claude Code status line input JSON.
 //!
+//! This crate provides strongly-typed Rust structs for deserializing the JSON
+//! payload that Claude Code sends to custom status line scripts via stdin.
+//! Every field mirrors the official schema so that downstream crates can work
+//! with validated, typed data instead of raw JSON.
+//!
+//! # Usage
+//!
+//! ```no_run
+//! use claude_code_statusline_model::StatusLineInput;
+//!
+//! let json = std::io::read_to_string(std::io::stdin()).unwrap();
+//! let input: StatusLineInput = serde_json::from_str(&json).unwrap();
+//! println!("Model: {}", input.model.display_name);
+//! ```
+//!
 //! Based on the official documentation:
 //! <https://code.claude.com/docs/en/statusline>
 
 use serde::{Deserialize, Serialize};
 
 /// Root structure for the JSON data that Claude Code sends to status line scripts via stdin.
+///
+/// This is the top-level object; all fields are always present except for the
+/// `Option`-wrapped ones (`vim`, `agent`, `worktree`, `rate_limits`), which
+/// appear only when their corresponding feature is active.
 ///
 /// See: <https://code.claude.com/docs/en/statusline#available-data>
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -165,10 +184,14 @@ pub struct Vim {
 }
 
 /// Vim mode variants.
+///
+/// Serialized as uppercase strings (`"NORMAL"`, `"INSERT"`) to match the JSON schema.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum VimMode {
+    /// Normal (command) mode.
     Normal,
+    /// Insert (editing) mode.
     Insert,
 }
 

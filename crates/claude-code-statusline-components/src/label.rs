@@ -1,10 +1,28 @@
 //! Label component for text/name values.
 //!
-//! Used for: `model.display_name`, `agent.name`, `vim.mode`, etc.
+//! Wraps arbitrary text with optional ANSI foreground/background colors,
+//! bracket delimiters, a prefix icon, and badge-style padding.
+//!
+//! Typical data sources: `model.display_name`, `agent.name`, `vim.mode`, etc.
 
 use crate::color::{Color, RESET};
 
 /// Configuration for label formatting.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::label::{Label, BracketStyle};
+/// use claude_code_statusline_components::color::Color;
+///
+/// let label = Label {
+///     bracket: Some(BracketStyle::Square),
+///     color: Some(Color::Cyan),
+///     ..Default::default()
+/// };
+/// let output = label.render("Opus");
+/// assert!(output.contains("[Opus]"));
+/// ```
 #[derive(Debug, Clone)]
 pub struct Label {
     /// Optional foreground color for the label text.
@@ -19,7 +37,7 @@ pub struct Label {
     pub pad: bool,
 }
 
-/// Bracket style for labels.
+/// Bracket style for wrapping label text.
 #[derive(Debug, Clone)]
 pub enum BracketStyle {
     /// `[text]`
@@ -44,6 +62,9 @@ impl Default for Label {
 
 impl Label {
     /// Render a label from a string value.
+    ///
+    /// The rendering order is: ANSI color start, optional padding, prefix,
+    /// bracket-wrapped text, optional padding, ANSI reset.
     pub fn render(&self, text: &str) -> String {
         let mut out = String::new();
 

@@ -1,4 +1,7 @@
 //! Agent information widget.
+//!
+//! Displays the active agent name. Returns `None` when no agent is
+//! configured (i.e., not running with `--agent` or agent settings).
 
 use claude_code_statusline_components::label::Label;
 use claude_code_statusline_model::StatusLineInput;
@@ -6,6 +9,8 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying the active agent name.
+///
+/// Returns `None` when no agent is active.
 pub struct AgentInfo {
     /// Label formatter.
     pub label: Label,

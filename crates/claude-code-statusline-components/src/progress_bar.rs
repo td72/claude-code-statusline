@@ -1,10 +1,28 @@
 //! Progress bar component for percentage values.
 //!
-//! Used for: `context_window.used_percentage`, `rate_limits.*.used_percentage`
+//! Renders a horizontal bar chart made of filled/empty characters, optionally
+//! colored according to configurable thresholds.
+//!
+//! Typical data sources: `context_window.used_percentage`,
+//! `rate_limits.*.used_percentage`.
 
 use crate::color::{color_for_value, Color, Threshold, RESET};
 
 /// Configuration for a progress bar component.
+///
+/// The bar is rendered as a fixed-width string of `filled_char` and `empty_char`
+/// characters, proportional to the input percentage. An optional percentage
+/// label, prefix, and suffix can surround the bar.
+///
+/// # Examples
+///
+/// ```
+/// use claude_code_statusline_components::progress_bar::ProgressBar;
+///
+/// let bar = ProgressBar { show_label: true, thresholds: vec![], ..Default::default() };
+/// let output = bar.render(42.0);
+/// assert!(output.contains("42%"));
+/// ```
 #[derive(Debug, Clone)]
 pub struct ProgressBar {
     /// Width of the bar in characters.
@@ -45,7 +63,10 @@ impl Default for ProgressBar {
 }
 
 impl ProgressBar {
-    /// Render the progress bar for a given percentage (0.0–100.0).
+    /// Render the progress bar for a given percentage (0.0--100.0).
+    ///
+    /// Values outside the range are clamped. The returned string may contain
+    /// ANSI escape codes when `thresholds` is non-empty.
     pub fn render(&self, percentage: f64) -> String {
         let pct = percentage.clamp(0.0, 100.0);
         let filled = (pct * self.width as f64 / 100.0).round() as usize;

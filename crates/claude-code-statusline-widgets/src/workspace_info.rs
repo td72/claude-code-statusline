@@ -1,4 +1,7 @@
 //! Workspace information widget.
+//!
+//! Displays the current working directory using the [`Path`] component
+//! for formatting, wrapped in an optional [`Label`] for color/badge styling.
 
 use claude_code_statusline_components::label::Label;
 use claude_code_statusline_components::path::Path;
@@ -7,6 +10,8 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying workspace directory information.
+///
+/// Always returns `Some` because workspace data is always present.
 pub struct WorkspaceInfo {
     /// Path formatter for the current directory.
     pub path: Path,

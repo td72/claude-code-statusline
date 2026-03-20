@@ -1,4 +1,7 @@
 //! Worktree information widget.
+//!
+//! Displays the active worktree's branch name (preferred) or its name as a
+//! fallback. Returns `None` when no worktree session is active.
 
 use claude_code_statusline_components::label::Label;
 use claude_code_statusline_model::StatusLineInput;

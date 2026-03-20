@@ -1,4 +1,7 @@
 //! Cost and duration summary widget.
+//!
+//! Renders session cost (USD), elapsed time, and optionally lines
+//! added/removed, joined by a configurable separator.
 
 use claude_code_statusline_components::count::Count;
 use claude_code_statusline_components::currency::Currency;
@@ -8,6 +11,8 @@ use claude_code_statusline_model::StatusLineInput;
 use crate::Widget;
 
 /// Widget for displaying session cost, duration, and lines changed.
+///
+/// Always returns `Some` because cost data is always present in the input.
 pub struct CostSummary {
     /// Currency formatter for cost.
     pub currency: Currency,
