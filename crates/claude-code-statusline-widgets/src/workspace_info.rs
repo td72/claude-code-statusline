@@ -1,5 +1,6 @@
 //! Workspace information widget.
 
+use claude_code_statusline_components::label::Label;
 use claude_code_statusline_components::path::Path;
 use claude_code_statusline_model::StatusLineInput;
 
@@ -9,19 +10,27 @@ use crate::Widget;
 pub struct WorkspaceInfo {
     /// Path formatter for the current directory.
     pub path: Path,
+    /// Label formatter for styling (color, bg, etc.).
+    pub label: Label,
 }
 
 impl Default for WorkspaceInfo {
     fn default() -> Self {
         Self {
             path: Path { prefix: "📁 ".into(), ..Default::default() },
+            label: Label::default(),
         }
     }
 }
 
 impl Widget for WorkspaceInfo {
     fn render(&self, input: &StatusLineInput) -> Option<String> {
-        Some(self.path.render(&input.workspace.current_dir))
+        let path_str = self.path.render(&input.workspace.current_dir);
+        if self.label.color.is_some() || self.label.bg.is_some() {
+            Some(self.label.render(&path_str))
+        } else {
+            Some(path_str)
+        }
     }
 }
 

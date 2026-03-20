@@ -71,6 +71,7 @@ pub struct WidgetConfig {
 
     // RateLimit options
     pub window: Option<String>,
+    pub reset_separator: Option<String>,
 
     // Thresholds
     pub thresholds: Option<ThresholdConfig>,

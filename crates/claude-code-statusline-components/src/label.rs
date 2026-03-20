@@ -47,10 +47,6 @@ impl Label {
     pub fn render(&self, text: &str) -> String {
         let mut out = String::new();
 
-        if !self.prefix.is_empty() {
-            out.push_str(&self.prefix);
-        }
-
         let wrapped = match &self.bracket {
             Some(BracketStyle::Square) => format!("[{text}]"),
             Some(BracketStyle::Round) => format!("({text})"),
@@ -69,12 +65,18 @@ impl Label {
             if self.pad {
                 out.push(' ');
             }
+            if !self.prefix.is_empty() {
+                out.push_str(&self.prefix);
+            }
             out.push_str(&wrapped);
             if self.pad {
                 out.push(' ');
             }
             out.push_str(RESET);
         } else {
+            if !self.prefix.is_empty() {
+                out.push_str(&self.prefix);
+            }
             out.push_str(&wrapped);
         }
 

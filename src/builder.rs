@@ -84,12 +84,15 @@ fn build_workspace_info(cfg: &WidgetConfig) -> WorkspaceInfo {
         Some("home_shortened") => PathStyle::HomeShortened,
         _ => PathStyle::BaseName,
     };
+    let has_bg = cfg.bg.is_some();
     WorkspaceInfo {
         path: Path {
             style,
-            prefix: cfg.prefix.clone().unwrap_or_default(),
+            // When bg is set, prefix goes to label (badge style), not path
+            prefix: if has_bg { String::new() } else { cfg.prefix.clone().unwrap_or_default() },
             home_dir: cfg.home_dir.clone().unwrap_or_default(),
         },
+        label: build_label(cfg),
     }
 }
 
@@ -169,6 +172,7 @@ fn build_rate_limit(cfg: &WidgetConfig, default_window: RateLimitWindowKind) -> 
     RateLimit {
         bar: build_progress_bar(cfg),
         window,
+        separator: cfg.reset_separator.clone().unwrap_or(" resets in ".to_string()),
         ..Default::default()
     }
 }
