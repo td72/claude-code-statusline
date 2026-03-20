@@ -14,7 +14,7 @@ Based on the [official documentation](https://code.claude.com/docs/en/statusline
 - `Vim` / `VimMode` -- vim mode state (NORMAL / INSERT)
 - `Agent` -- active agent name
 - `Worktree` -- worktree name, path, and branch info
-- `RateLimits` / `RateLimitWindow` -- Claude.ai rate limit usage (5-hour and 7-day windows)
+- `RateLimits` / `RateLimitWindow` -- Claude.ai rate limit usage (`five_hour` and `seven_day` windows with Unix-timestamp `resets_at`)
 
 Optional fields (`vim`, `agent`, `worktree`, `rate_limits`) are `Option` and only present when the corresponding feature is active.
 

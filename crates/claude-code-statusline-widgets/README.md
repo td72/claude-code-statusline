@@ -18,15 +18,16 @@ Returns `None` when the required data is absent (e.g., `AgentInfo` returns `None
 
 | Widget | Renders | Returns `None` when |
 |---|---|---|
-| `ModelInfo` | Model display name | never |
-| `CostSummary` | Cost, duration, and optionally lines changed | never |
+| `ModelInfo` | Model display name; `short` option strips parenthesized suffixes | never |
+| `CostSummary` | Cost, duration, and optionally lines changed; configurable icon prefixes (`cost_prefix`, `duration_prefix`, `lines_prefix`) | never |
 | `ContextUsage` | Context window progress bar with optional token counts | never |
 | `TokenAlert` | Warning indicator when tokens exceed 200k | tokens are under threshold |
-| `VimStatus` | Current vim mode (NORMAL / INSERT) | vim mode is disabled |
+| `VimStatus` | Current vim mode (NORMAL / INSERT) with optional per-mode bg/fg colors | vim mode is disabled |
 | `AgentInfo` | Active agent name | no agent is active |
 | `WorktreeInfo` | Worktree branch or name | not in a worktree session |
 | `WorkspaceInfo` | Current working directory | never |
-| `RateLimit` | Rate limit progress bar with reset countdown | no rate limit data (non-Claude.ai) |
+| `GitBranch` | Current git branch (runs `git branch --show-current`) | not a git repo or detached HEAD |
+| `RateLimit` | Rate limit progress bar with reset countdown; configurable `reset_separator` | no rate limit data (non-Claude.ai) |
 
 ## Usage
 

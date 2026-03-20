@@ -18,15 +18,16 @@ pub trait Widget {
 
 | ウィジェット | 表示内容 | `None` を返す条件 |
 |---|---|---|
-| `ModelInfo` | モデル表示名 | なし |
-| `CostSummary` | コスト、経過時間、変更行数 | なし |
+| `ModelInfo` | モデル表示名。`short` オプションで括弧付きサフィックスを除去 | なし |
+| `CostSummary` | コスト、経過時間、変更行数。アイコンプレフィックス設定可能 (`cost_prefix`, `duration_prefix`, `lines_prefix`) | なし |
 | `ContextUsage` | コンテキストウィンドウのプログレスバー + トークン数 | なし |
 | `TokenAlert` | 200kトークン超過時の警告 | トークンが閾値未満 |
-| `VimStatus` | 現在のVimモード (NORMAL / INSERT) | Vimモード無効時 |
+| `VimStatus` | 現在のVimモード (NORMAL / INSERT)。モードごとの背景色/前景色設定に対応 | Vimモード無効時 |
 | `AgentInfo` | アクティブなエージェント名 | エージェント未使用時 |
 | `WorktreeInfo` | ワークツリーのブランチまたは名前 | ワークツリーセッション外 |
 | `WorkspaceInfo` | 現在の作業ディレクトリ | なし |
-| `RateLimit` | レート制限プログレスバー + リセットまでのカウントダウン | レート制限データなし (非Claude.ai) |
+| `GitBranch` | 現在のgitブランチ (`git branch --show-current` を実行) | gitリポジトリ外またはdetached HEAD |
+| `RateLimit` | レート制限プログレスバー + リセットまでのカウントダウン。`reset_separator` 設定可能 | レート制限データなし (非Claude.ai) |
 
 ## 使い方
 
