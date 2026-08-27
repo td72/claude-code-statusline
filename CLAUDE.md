@@ -10,7 +10,7 @@ A configurable, multi-line status line for Claude Code. Reads JSON session data 
 
 ```bash
 cargo build                          # Build all crates
-cargo test --workspace               # Run all tests (71 tests across 4 crates)
+cargo test --workspace               # Run all tests (120 tests across 4 crates)
 cargo install --path .               # Install binary as `claude-code-statusline`
 
 # Test with mock input
@@ -29,15 +29,15 @@ stdin JSON → model (parse) → widgets (render) → stdout
 
 **3 crates + 1 binary:**
 
-- **model** — Serde types for Claude Code's statusline JSON. Based on https://code.claude.com/docs/en/statusline. Note: actual JSON differs from docs in some places (e.g., `rate_limits` uses `five_hour`/`seven_day` keys and Unix timestamps, not `5h`/`7d` and ISO 8601).
-- **components** — Rendering primitives: `ProgressBar`, `Duration`, `Currency`, `Count`, `Countdown`, `Label`, `Path`, `Indicator`, plus `color` module for ANSI/256-color support.
-- **widgets** — `Widget` trait (`render(&self, input: &StatusLineInput) -> Option<String>`) with 10 implementations. Returns `None` when data is absent (e.g., agent/vim/worktree).
+- **model** — Serde types for Claude Code's statusline JSON. Based on https://code.claude.com/docs/en/statusline. Only `cwd`, `session_id`, `model`, `workspace` are required; everything else is `#[serde(default)]` / `Option` so a partial payload degrades instead of blanking the status line. All structs derive `Default` — build test inputs with `StatusLineInput { field, ..Default::default() }`.
+- **components** — Rendering primitives: `ProgressBar`, `Duration`, `Currency`, `Count`, `Countdown`, `Label`, `Path`, `Indicator`, `Link` (OSC 8), plus `color` module for ANSI/256-color support.
+- **widgets** — `Widget` trait (`render(&self, input: &StatusLineInput) -> Option<String>`) with 17 implementations. Returns `None` when data is absent (e.g., agent/vim/worktree/pr/effort).
 - **src/** — CLI binary. `config.rs` loads TOML (--config flag → ~/.config/ → built-in default via `include_str!`). `builder.rs` maps widget names to constructed `Box<dyn Widget>`.
 
 ## Key patterns
 
 - **`builder.rs` is the glue** — maps config widget names ("model", "context_usage", etc.) to widget structs. Add new widgets here.
-- **`git_branch` runs `git branch --show-current`** — the only widget that executes external commands rather than reading from `StatusLineInput`.
+- **`git_branch` runs `git branch --show-current`** — the only widget that executes external commands rather than reading from `StatusLineInput` (skipped when `worktree.branch` already carries the name).
 - **`RateLimit.render_with_now()`** — accepts explicit timestamp for deterministic testing. `Widget::render()` wraps it with real system time.
 - **Label bg + prefix interaction** — when `bg` is set, prefix is rendered inside the colored region (badge style). `WorkspaceInfo` builder moves prefix from Path to Label when bg is configured.
 - **Color strings** — config accepts names ("red", "cyan") or ANSI 256 codes ("117", "236") parsed in `config::parse_color`.

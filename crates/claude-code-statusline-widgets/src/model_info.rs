@@ -50,7 +50,7 @@ mod tests {
 
     fn make_input(model_name: &str) -> StatusLineInput {
         StatusLineInput {
-            model: Model { id: "claude-opus-4-6".into(), display_name: model_name.into() },
+            model: Model { id: "claude-opus-5".into(), display_name: model_name.into() },
             ..Default::default()
         }
     }
@@ -75,7 +75,7 @@ mod tests {
     #[test]
     fn renders_short() {
         let w = ModelInfo { short: true, ..Default::default() };
-        let input = make_input("Opus 4.6 (1M context)");
-        assert_eq!(w.render(&input).unwrap(), "Opus 4.6");
+        let input = make_input("Opus 5 (1M context)");
+        assert_eq!(w.render(&input).unwrap(), "Opus 5");
     }
 }

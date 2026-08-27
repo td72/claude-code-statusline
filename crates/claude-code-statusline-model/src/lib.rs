@@ -124,7 +124,7 @@ pub struct StatusLineInput {
 /// Current model identifier and display name.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Model {
-    /// Model identifier (e.g., `"claude-opus-4-6"`).
+    /// Model identifier (e.g., `"claude-opus-5"`).
     pub id: String,
 
     /// Model display name (e.g., `"Opus"`).
@@ -191,7 +191,9 @@ pub struct OutputStyle {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Cost {
-    /// Total session cost in USD.
+    /// Estimated session cost in USD, computed client-side; may differ from
+    /// the actual bill. Resets to `0` when `/clear` starts a new session
+    /// (Claude Code v2.1.211 and later).
     pub total_cost_usd: f64,
 
     /// Total wall-clock time since the session started, in milliseconds.
@@ -213,10 +215,13 @@ pub struct Cost {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ContextWindow {
-    /// Cumulative input token count across the entire session.
+    /// Input tokens currently in the context window, from the most recent
+    /// API response: the sum of `input_tokens`, `cache_creation_input_tokens`,
+    /// and `cache_read_input_tokens`. `0` before the first API response.
     pub total_input_tokens: u64,
 
-    /// Cumulative output token count across the entire session.
+    /// Output tokens from the most recent API response.
+    /// `0` before the first API response.
     pub total_output_tokens: u64,
 
     /// Maximum context window size in tokens.
@@ -402,7 +407,7 @@ mod tests {
             "prompt_id": "550e8400-e29b-41d4-a716-446655440000",
             "transcript_path": "/path/to/transcript.jsonl",
             "model": {
-                "id": "claude-opus-4-6",
+                "id": "claude-opus-5",
                 "display_name": "Opus"
             },
             "workspace": {
@@ -483,7 +488,7 @@ mod tests {
         assert_eq!(input.cwd, "/current/working/directory");
         assert_eq!(input.session_name.as_deref(), Some("my-session"));
         assert_eq!(input.prompt_id.as_deref(), Some("550e8400-e29b-41d4-a716-446655440000"));
-        assert_eq!(input.model.id, "claude-opus-4-6");
+        assert_eq!(input.model.id, "claude-opus-5");
         assert_eq!(input.model.display_name, "Opus");
         assert_eq!(input.workspace.project_dir, "/original/project/directory");
         assert_eq!(input.cost.total_cost_usd, 0.01234);
@@ -577,7 +582,7 @@ mod tests {
             "cwd": "/home/user/project",
             "session_id": "sess-001",
             "transcript_path": "/tmp/transcript.jsonl",
-            "model": { "id": "claude-sonnet-4-6", "display_name": "Sonnet" },
+            "model": { "id": "claude-sonnet-5", "display_name": "Sonnet" },
             "workspace": { "current_dir": "/home/user/project", "project_dir": "/home/user/project" },
             "version": "1.0.80",
             "output_style": { "name": "default" },
@@ -639,7 +644,7 @@ mod tests {
             session_id: "id".to_string(),
             transcript_path: "/t.jsonl".to_string(),
             model: Model {
-                id: "claude-opus-4-6".to_string(),
+                id: "claude-opus-5".to_string(),
                 display_name: "Opus".to_string(),
             },
             workspace: Workspace {
@@ -671,7 +676,7 @@ mod tests {
 
         let json = serde_json::to_string(&input).unwrap();
         let deserialized: StatusLineInput = serde_json::from_str(&json).unwrap();
-        assert_eq!(deserialized.model.id, "claude-opus-4-6");
+        assert_eq!(deserialized.model.id, "claude-opus-5");
         assert_eq!(deserialized.cost.total_cost_usd, 0.05);
     }
 }

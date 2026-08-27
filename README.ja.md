@@ -6,7 +6,7 @@ stdinからJSONセッションデータを読み取り、ANSIカラー付きの�
 
 ```
  NORMAL 📁 my-project  main
-🤖 Opus 4.6 ██░░░░░░░░ 17% (173k/1.00M)
+🤖 Opus 5 ██░░░░░░░░ 17% (173k/1.00M)
 💰 $0.87 | ⏱ 9m 2s | 📝 +423 -15
 🕐 █░░░░ 24% ↻2h 30m   📅 █░░░░ 15% ↻2d 14h
 ```
@@ -25,10 +25,13 @@ cargo install --path .
 {
   "statusLine": {
     "type": "command",
-    "command": "claude-code-statusline"
+    "command": "claude-code-statusline",
+    "refreshInterval": 60
   }
 }
 ```
+
+Claude Code はセッションイベント (アシスタントの応答、`/compact`、モード変更など) のたびにコマンドを再実行します。任意の `refreshInterval` (秒) を指定するとタイマーでも再実行されるため、アイドル中も `rate_limit` のカウントダウンが進みます。`"padding": 2` を足すと組み込みフッターに対してインデントされます。
 
 ## 設定
 
@@ -115,7 +118,7 @@ bg = "237"
 
 | ウィジェット | 説明 |
 |---|---|
-| `model` | モデル名 (例: `Opus 4.6`)。`short = true` で括弧付きサフィックスを除去 |
+| `model` | モデル名 (例: `Opus 5`)。`short = true` で括弧付きサフィックスを除去 |
 | `session` | `--name` / `/rename` で付けた名前、または AI 生成のセッションタイトル。`max_len` で切り詰め (名前なしなら非表示) |
 | `workspace` | 現在のディレクトリ |
 | `repo` | `origin` リモートから得たリポジトリ名をリンク付きで表示。`style = "name" \| "owner_name" \| "full"` (リポジトリ外では非表示) |
@@ -125,7 +128,7 @@ bg = "237"
 | `worktree` | worktree のブランチ/名前。`source = "any"` (デフォルト) は通常の `git worktree add` も表示、`"session"` は `--worktree` セッションのみ (非アクティブ時は非表示) |
 | `vim` | Vimモード (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`)。モードごとの背景色/前景色設定に対応 (無効時は非表示) |
 | `effort` | 推論 effort レベル (`low`〜`max`)。`[widget.effort.colors]` でレベルごとに色指定可 (非対応モデルでは非表示) |
-| `context_usage` | コンテキストウィンドウ プログレスバー + トークン数 |
+| `context_usage` | コンテキストウィンドウ プログレスバー。`show_tokens` で「現在コンテキストに載っている入力トークン数 / ウィンドウサイズ」を付加 |
 | `cost_summary` | コスト、経過時間、変更行数。アイコンプレフィックス設定可能 |
 | `token_alert` | 200kトークン超過時の警告インジケータ |
 | `fast_mode` | fast mode 有効時のインジケータ。`on_text` / `off_text` / `on_color` で調整 (無効時は非表示) |

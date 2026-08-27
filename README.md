@@ -6,7 +6,7 @@ Reads JSON session data from stdin and renders a customizable status bar using A
 
 ```
  NORMAL 📁 my-project  main
-🤖 Opus 4.6 ██░░░░░░░░ 17% (173k/1.00M)
+🤖 Opus 5 ██░░░░░░░░ 17% (173k/1.00M)
 💰 $0.87 | ⏱ 9m 2s | 📝 +423 -15
 🕐 █░░░░ 24% ↻2h 30m   📅 █░░░░ 15% ↻2d 14h
 ```
@@ -25,10 +25,13 @@ Add to `~/.claude/settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "claude-code-statusline"
+    "command": "claude-code-statusline",
+    "refreshInterval": 60
   }
 }
 ```
+
+Claude Code re-runs the command on session events (new assistant message, `/compact`, mode changes). The optional `refreshInterval` (seconds) also re-runs it on a timer, which keeps the `rate_limit` countdown ticking while the session is idle. Add `"padding": 2` to indent the status line relative to the built-in footer.
 
 ## Configuration
 
@@ -115,7 +118,7 @@ bg = "237"
 
 | Widget | Description |
 |---|---|
-| `model` | Model name (e.g., `Opus 4.6`); `short = true` strips parenthesized suffixes |
+| `model` | Model name (e.g., `Opus 5`); `short = true` strips parenthesized suffixes |
 | `session` | Session name from `--name` / `/rename` or the AI-generated title, truncated to `max_len` (hidden when unnamed) |
 | `workspace` | Current directory |
 | `repo` | Repository from the `origin` remote as a clickable link; `style = "name" \| "owner_name" \| "full"` (hidden outside a repo) |
@@ -125,7 +128,7 @@ bg = "237"
 | `worktree` | Worktree branch/name; `source = "any"` (default) also shows plain `git worktree add` worktrees, `"session"` only `--worktree` sessions (hidden when inactive) |
 | `vim` | Vim mode (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`) with optional per-mode bg/fg colors (hidden when disabled) |
 | `effort` | Reasoning effort level (`low`–`max`); `[widget.effort.colors]` maps levels to colors (hidden when unsupported) |
-| `context_usage` | Context window progress bar + token counts |
+| `context_usage` | Context window progress bar; `show_tokens` appends input tokens currently in context / window size |
 | `cost_summary` | Cost, duration, lines changed; configurable icon prefixes |
 | `token_alert` | Warning indicator when >200k tokens |
 | `fast_mode` | Indicator while fast mode is on; `on_text` / `off_text` / `on_color` (hidden when off) |
