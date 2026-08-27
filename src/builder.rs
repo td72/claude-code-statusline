@@ -12,6 +12,7 @@ use claude_code_statusline_components::path::{Path, PathStyle};
 use claude_code_statusline_components::progress_bar::ProgressBar;
 use claude_code_statusline_widgets::rate_limit::RateLimitWindowKind;
 use claude_code_statusline_widgets::repo_info::RepoStyle;
+use claude_code_statusline_widgets::worktree_info::WorktreeSource;
 use claude_code_statusline_widgets::*;
 
 use crate::config::{parse_bracket, parse_color, WidgetConfig};
@@ -136,8 +137,13 @@ fn build_agent_info(cfg: &WidgetConfig) -> AgentInfo {
 }
 
 fn build_worktree_info(cfg: &WidgetConfig) -> WorktreeInfo {
+    let source = match cfg.source.as_deref() {
+        Some("session") => WorktreeSource::Session,
+        _ => WorktreeSource::Any,
+    };
     WorktreeInfo {
         label: build_label(cfg),
+        source,
     }
 }
 
