@@ -11,6 +11,7 @@ use claude_code_statusline_components::link::Link;
 use claude_code_statusline_components::path::{Path, PathStyle};
 use claude_code_statusline_components::progress_bar::ProgressBar;
 use claude_code_statusline_widgets::rate_limit::RateLimitWindowKind;
+use claude_code_statusline_widgets::repo_info::RepoStyle;
 use claude_code_statusline_widgets::*;
 
 use crate::config::{parse_bracket, parse_color, WidgetConfig};
@@ -22,13 +23,14 @@ use crate::config::{parse_bracket, parse_color, WidgetConfig};
 ///
 /// # Recognized names
 ///
-/// `"model"`, `"workspace"`, `"agent"`, `"worktree"`, `"git_branch"`,
+/// `"model"`, `"workspace"`, `"repo"`, `"agent"`, `"worktree"`, `"git_branch"`,
 /// `"pr"`, `"vim"`, `"effort"`, `"context_usage"`, `"cost_summary"`,
 /// `"token_alert"`, `"rate_limit_5h"`, `"rate_limit_7d"`.
 pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
     match name {
         "model" => Some(Box::new(build_model_info(cfg))),
         "workspace" => Some(Box::new(build_workspace_info(cfg))),
+        "repo" => Some(Box::new(build_repo_info(cfg))),
         "agent" => Some(Box::new(build_agent_info(cfg))),
         "worktree" => Some(Box::new(build_worktree_info(cfg))),
         "git_branch" => Some(Box::new(build_git_branch(cfg))),
@@ -113,6 +115,19 @@ fn build_workspace_info(cfg: &WidgetConfig) -> WorkspaceInfo {
             home_dir: cfg.home_dir.clone().unwrap_or_default(),
         },
         label: build_label(cfg),
+    }
+}
+
+fn build_repo_info(cfg: &WidgetConfig) -> RepoInfo {
+    let style = match cfg.style.as_deref() {
+        Some("name") => RepoStyle::Name,
+        Some("full") => RepoStyle::Full,
+        _ => RepoStyle::OwnerName,
+    };
+    RepoInfo {
+        label: build_label(cfg),
+        link: build_link(cfg),
+        style,
     }
 }
 

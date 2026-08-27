@@ -117,6 +117,7 @@ bg = "237"
 |---|---|
 | `model` | モデル名 (例: `Opus 4.6`)。`short = true` で括弧付きサフィックスを除去 |
 | `workspace` | 現在のディレクトリ |
+| `repo` | `origin` リモートから得たリポジトリ名をリンク付きで表示。`style = "name" \| "owner_name" \| "full"` (リポジトリ外では非表示) |
 | `git_branch` | 現在のgitブランチ (`git branch --show-current` で取得。リポジトリ外では非表示) |
 | `pr` | オープン中の PR/MR 番号 (`#123` / `!123`) を OSC 8 リンクで表示。`[widget.pr.colors]` で `review_state` ごとに色指定、`link = false` でリンク無効化 (PR なしなら非表示) |
 | `agent` | エージェント名 (非アクティブ時は非表示) |
