@@ -7,6 +7,7 @@ use claude_code_statusline_components::color::{Color, Threshold};
 use claude_code_statusline_components::count::{Count, CountStyle};
 use claude_code_statusline_components::indicator::Indicator;
 use claude_code_statusline_components::label::Label;
+use claude_code_statusline_components::link::Link;
 use claude_code_statusline_components::path::{Path, PathStyle};
 use claude_code_statusline_components::progress_bar::ProgressBar;
 use claude_code_statusline_widgets::rate_limit::RateLimitWindowKind;
@@ -22,7 +23,7 @@ use crate::config::{parse_bracket, parse_color, WidgetConfig};
 /// # Recognized names
 ///
 /// `"model"`, `"workspace"`, `"agent"`, `"worktree"`, `"git_branch"`,
-/// `"vim"`, `"effort"`, `"context_usage"`, `"cost_summary"`,
+/// `"pr"`, `"vim"`, `"effort"`, `"context_usage"`, `"cost_summary"`,
 /// `"token_alert"`, `"rate_limit_5h"`, `"rate_limit_7d"`.
 pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
     match name {
@@ -31,6 +32,7 @@ pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
         "agent" => Some(Box::new(build_agent_info(cfg))),
         "worktree" => Some(Box::new(build_worktree_info(cfg))),
         "git_branch" => Some(Box::new(build_git_branch(cfg))),
+        "pr" => Some(Box::new(build_pr_info(cfg))),
         "vim" => Some(Box::new(build_vim_status(cfg))),
         "effort" => Some(Box::new(build_effort_level(cfg))),
         "context_usage" => Some(Box::new(build_context_usage(cfg))),
@@ -126,6 +128,18 @@ fn build_worktree_info(cfg: &WidgetConfig) -> WorktreeInfo {
 
 fn build_git_branch(cfg: &WidgetConfig) -> GitBranch {
     GitBranch { label: build_label(cfg) }
+}
+
+fn build_link(cfg: &WidgetConfig) -> Link {
+    Link { enabled: cfg.link.unwrap_or(true) }
+}
+
+fn build_pr_info(cfg: &WidgetConfig) -> PrInfo {
+    PrInfo {
+        label: build_label(cfg),
+        link: build_link(cfg),
+        colors: build_value_colors(cfg),
+    }
 }
 
 fn build_vim_status(cfg: &WidgetConfig) -> VimStatus {

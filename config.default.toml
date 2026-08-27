@@ -6,7 +6,7 @@
 
 # Line 1: Where am I?
 [[line]]
-widgets = ["vim", "workspace", "git_branch", "worktree"]
+widgets = ["vim", "workspace", "git_branch", "pr", "worktree"]
 separator = ""
 
 # Line 2: Model + effort + context
@@ -47,6 +47,18 @@ bg = "240"
 prefix = " "
 color = "255"
 bg = "237"    # #3a3a3a ≈ #2E3C43
+
+# Open PR: #123 (clickable), colored by review state
+[widget.pr]
+prefix = " "
+color = "255"
+bg = "237"
+link = true
+
+[widget.pr.colors]
+approved = "green"
+changes_requested = "red"
+draft = "245"
 
 [widget.worktree]
 prefix = "🌲 "
