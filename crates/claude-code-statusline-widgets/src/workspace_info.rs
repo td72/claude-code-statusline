@@ -47,36 +47,8 @@ mod tests {
     fn make_input(dir: &str) -> StatusLineInput {
         StatusLineInput {
             cwd: dir.into(),
-            session_id: "s".into(),
-            transcript_path: "/t".into(),
-            model: Model { id: "m".into(), display_name: "M".into() },
-            workspace: Workspace {
-                current_dir: dir.into(),
-                project_dir: dir.into(),
-                added_dirs: None,
-            },
-            version: "1.0".into(),
-            output_style: OutputStyle { name: "default".into() },
-            cost: Cost {
-                total_cost_usd: 0.0,
-                total_duration_ms: 0,
-                total_api_duration_ms: 0,
-                total_lines_added: 0,
-                total_lines_removed: 0,
-            },
-            context_window: ContextWindow {
-                total_input_tokens: 0,
-                total_output_tokens: 0,
-                context_window_size: 200_000,
-                used_percentage: None,
-                remaining_percentage: None,
-                current_usage: None,
-            },
-            exceeds_200k_tokens: false,
-            vim: None,
-            agent: None,
-            worktree: None,
-            rate_limits: None,
+            workspace: Workspace { current_dir: dir.into(), project_dir: dir.into(), ..Default::default() },
+            ..Default::default()
         }
     }
 

@@ -22,12 +22,15 @@ use serde::{Deserialize, Serialize};
 
 /// Root structure for the JSON data that Claude Code sends to status line scripts via stdin.
 ///
-/// This is the top-level object; all fields are always present except for the
-/// `Option`-wrapped ones (`vim`, `agent`, `worktree`, `rate_limits`), which
-/// appear only when their corresponding feature is active.
+/// This is the top-level object. Only `cwd`, `session_id`, `model`, and
+/// `workspace` are required to deserialize; every other field falls back to
+/// its `Default` (or `None`) when absent so that a partial payload degrades
+/// gracefully instead of failing to parse. Feature-gated objects (`vim`,
+/// `agent`, `worktree`, `rate_limits`) appear only when their corresponding
+/// feature is active.
 ///
 /// See: <https://code.claude.com/docs/en/statusline#available-data>
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct StatusLineInput {
     /// Current working directory.
     /// Same value as `workspace.current_dir`; `workspace.current_dir` is preferred.
@@ -37,6 +40,7 @@ pub struct StatusLineInput {
     pub session_id: String,
 
     /// Path to conversation transcript file.
+    #[serde(default)]
     pub transcript_path: String,
 
     /// Current model information.
@@ -46,42 +50,48 @@ pub struct StatusLineInput {
     pub workspace: Workspace,
 
     /// Claude Code version.
+    #[serde(default)]
     pub version: String,
 
     /// Current output style configuration.
+    #[serde(default)]
     pub output_style: OutputStyle,
 
     /// Session cost and duration tracking.
+    #[serde(default)]
     pub cost: Cost,
 
     /// Context window usage information.
+    #[serde(default)]
     pub context_window: ContextWindow,
 
     /// Whether the total token count from the most recent API response exceeds 200k.
     /// This is a fixed threshold regardless of actual context window size.
+    #[serde(default)]
     pub exceeds_200k_tokens: bool,
 
     /// Vim mode information. Only present when vim mode is enabled.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vim: Option<Vim>,
 
     /// Agent information. Only present when running with `--agent` flag or agent settings configured.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub agent: Option<Agent>,
 
     /// Worktree information. Only present during `--worktree` sessions.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub worktree: Option<Worktree>,
 
-    /// Rate limit usage for Claude.ai. Only present for Claude.ai users.
+    /// Rate limit usage for Claude.ai. Only present for Claude.ai Pro/Max
+    /// subscribers, after the first API response in the session.
     ///
     /// Added in v2.1.80.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rate_limits: Option<RateLimits>,
 }
 
 /// Current model identifier and display name.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Model {
     /// Model identifier (e.g., `"claude-opus-4-6"`).
     pub id: String,
@@ -91,31 +101,36 @@ pub struct Model {
 }
 
 /// Workspace directory information.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Workspace {
     /// Current working directory.
     pub current_dir: String,
 
     /// Directory where Claude Code was launched.
     /// May differ from `current_dir` if the working directory changes during a session.
+    #[serde(default)]
     pub project_dir: String,
 
     /// Directories added via `/add-dir`.
     ///
     /// Added in v2.1.47.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub added_dirs: Option<Vec<String>>,
 }
 
 /// Current output style configuration.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct OutputStyle {
     /// Name of the current output style.
+    #[serde(default)]
     pub name: String,
 }
 
 /// Session cost and duration tracking.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+///
+/// Every field defaults to `0` when absent.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Cost {
     /// Total session cost in USD.
     pub total_cost_usd: f64,
@@ -134,7 +149,10 @@ pub struct Cost {
 }
 
 /// Context window usage information.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+///
+/// Every field defaults to `0` / `None` when absent.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ContextWindow {
     /// Cumulative input token count across the entire session.
     pub total_input_tokens: u64,
@@ -161,7 +179,10 @@ pub struct ContextWindow {
 }
 
 /// Token counts from the most recent API call.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+///
+/// Every field defaults to `0` when absent.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CurrentUsage {
     /// Input tokens in current context.
     pub input_tokens: u64,
@@ -177,7 +198,7 @@ pub struct CurrentUsage {
 }
 
 /// Vim mode information.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Vim {
     /// Current vim mode.
     pub mode: VimMode,
@@ -189,10 +210,11 @@ pub struct Vim {
 /// `"VISUAL LINE"`) to match the JSON schema. Any other string deserializes
 /// to [`VimMode::Unknown`] so that a new mode added by Claude Code never
 /// breaks parsing of the whole payload.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum VimMode {
     /// Normal (command) mode.
+    #[default]
     Normal,
     /// Insert (editing) mode.
     Insert,
@@ -207,49 +229,58 @@ pub enum VimMode {
 }
 
 /// Agent information.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Agent {
     /// Agent name.
     pub name: String,
 }
 
 /// Worktree information.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+///
+/// Only `name` is required; hook-based worktrees may omit the branch fields
+/// and the rest is tolerated as optional for robustness.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Worktree {
     /// Name of the active worktree.
     pub name: String,
 
     /// Absolute path to the worktree directory.
+    #[serde(default)]
     pub path: String,
 
     /// Git branch name for the worktree (e.g., `"worktree-my-feature"`).
     /// Absent for hook-based worktrees.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub branch: Option<String>,
 
     /// The directory Claude was in before entering the worktree.
-    pub original_cwd: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_cwd: Option<String>,
 
     /// Git branch checked out before entering the worktree.
     /// Absent for hook-based worktrees.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original_branch: Option<String>,
 }
 
 /// Rate limit usage for Claude.ai.
 ///
+/// Each window may be independently absent.
+///
 /// Added in v2.1.80.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct RateLimits {
     /// 5-hour rolling window rate limit.
-    pub five_hour: RateLimitWindow,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub five_hour: Option<RateLimitWindow>,
 
     /// 7-day rolling window rate limit.
-    pub seven_day: RateLimitWindow,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub seven_day: Option<RateLimitWindow>,
 }
 
 /// A single rate limit window.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct RateLimitWindow {
     /// Percentage of the rate limit used.
     pub used_percentage: f64,
@@ -354,9 +385,55 @@ mod tests {
         assert_eq!(worktree.branch, Some("worktree-my-feature".to_string()));
 
         let rate_limits = input.rate_limits.unwrap();
-        assert_eq!(rate_limits.five_hour.used_percentage, 42.5);
-        assert_eq!(rate_limits.five_hour.resets_at, 1774029600);
-        assert_eq!(rate_limits.seven_day.used_percentage, 10.2);
+        let five_hour = rate_limits.five_hour.unwrap();
+        assert_eq!(five_hour.used_percentage, 42.5);
+        assert_eq!(five_hour.resets_at, 1774029600);
+        assert_eq!(rate_limits.seven_day.unwrap().used_percentage, 10.2);
+    }
+
+    #[test]
+    fn deserialize_required_only() {
+        let json = r#"{
+            "cwd": "/p",
+            "session_id": "s",
+            "model": { "id": "m", "display_name": "M" },
+            "workspace": { "current_dir": "/p" }
+        }"#;
+
+        let input: StatusLineInput = serde_json::from_str(json).unwrap();
+        assert_eq!(input.workspace.project_dir, "");
+        assert_eq!(input.version, "");
+        assert_eq!(input.cost.total_cost_usd, 0.0);
+        assert_eq!(input.context_window.context_window_size, 0);
+        assert!(!input.exceeds_200k_tokens);
+        assert!(input.rate_limits.is_none());
+    }
+
+    #[test]
+    fn deserialize_partial_rate_limits() {
+        let json = r#"{
+            "five_hour": { "used_percentage": 23.5, "resets_at": 1738425600 }
+        }"#;
+
+        let limits: RateLimits = serde_json::from_str(json).unwrap();
+        assert_eq!(limits.five_hour.unwrap().used_percentage, 23.5);
+        assert!(limits.seven_day.is_none());
+
+        let limits: RateLimits = serde_json::from_str("{}").unwrap();
+        assert!(limits.five_hour.is_none());
+        assert!(limits.seven_day.is_none());
+    }
+
+    #[test]
+    fn deserialize_minimal_worktree() {
+        let json = r#"{ "name": "my-feature" }"#;
+
+        let wt: Worktree = serde_json::from_str(json).unwrap();
+        assert_eq!(wt.name, "my-feature");
+        assert_eq!(wt.path, "");
+        assert!(wt.branch.is_none());
+        assert!(wt.original_cwd.is_none());
+        assert!(wt.original_branch.is_none());
     }
 
     #[test]
@@ -446,11 +523,7 @@ mod tests {
                 remaining_percentage: Some(95.0),
                 current_usage: None,
             },
-            exceeds_200k_tokens: false,
-            vim: None,
-            agent: None,
-            worktree: None,
-            rate_limits: None,
+            ..Default::default()
         };
 
         let json = serde_json::to_string(&input).unwrap();

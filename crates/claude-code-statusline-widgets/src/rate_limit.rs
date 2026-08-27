@@ -2,7 +2,7 @@
 //!
 //! Displays a progress bar for the rate limit percentage and a countdown
 //! to the reset time. Returns `None` when the input has no `rate_limits`
-//! (i.e., the user is not on Claude.ai).
+//! (i.e., the user is not on Claude.ai) or the selected window is absent.
 
 use claude_code_statusline_components::countdown::Countdown;
 use claude_code_statusline_components::progress_bar::ProgressBar;
@@ -12,7 +12,8 @@ use crate::Widget;
 
 /// Widget for displaying rate limit usage.
 ///
-/// Returns `None` when `rate_limits` is absent from the input.
+/// Returns `None` when `rate_limits` or the selected window is absent
+/// from the input.
 pub struct RateLimit {
     /// Progress bar for the usage percentage.
     pub bar: ProgressBar,
@@ -53,8 +54,8 @@ impl RateLimit {
     pub fn render_with_now(&self, input: &StatusLineInput, now_epoch_secs: i64) -> Option<String> {
         let limits = input.rate_limits.as_ref()?;
         let window = match &self.window {
-            RateLimitWindowKind::FiveHour => &limits.five_hour,
-            RateLimitWindowKind::SevenDay => &limits.seven_day,
+            RateLimitWindowKind::FiveHour => limits.five_hour.as_ref()?,
+            RateLimitWindowKind::SevenDay => limits.seven_day.as_ref()?,
         };
 
         let bar = self.bar.render(window.used_percentage);
@@ -81,46 +82,17 @@ mod tests {
 
     fn make_input_with_limits() -> StatusLineInput {
         StatusLineInput {
-            cwd: "/test".into(),
-            session_id: "s".into(),
-            transcript_path: "/t".into(),
-            model: Model { id: "m".into(), display_name: "M".into() },
-            workspace: Workspace {
-                current_dir: "/test".into(),
-                project_dir: "/test".into(),
-                added_dirs: None,
-            },
-            version: "1.0".into(),
-            output_style: OutputStyle { name: "default".into() },
-            cost: Cost {
-                total_cost_usd: 0.0,
-                total_duration_ms: 0,
-                total_api_duration_ms: 0,
-                total_lines_added: 0,
-                total_lines_removed: 0,
-            },
-            context_window: ContextWindow {
-                total_input_tokens: 0,
-                total_output_tokens: 0,
-                context_window_size: 200_000,
-                used_percentage: None,
-                remaining_percentage: None,
-                current_usage: None,
-            },
-            exceeds_200k_tokens: false,
-            vim: None,
-            agent: None,
-            worktree: None,
             rate_limits: Some(RateLimits {
-                five_hour: RateLimitWindow {
+                five_hour: Some(RateLimitWindow {
                     used_percentage: 42.5,
                     resets_at: 1774029600, // 2026-03-18T06:00:00Z
-                },
-                seven_day: RateLimitWindow {
+                }),
+                seven_day: Some(RateLimitWindow {
                     used_percentage: 10.2,
                     resets_at: 1774634400, // 2026-03-25T06:00:00Z
-                },
+                }),
             }),
+            ..Default::default()
         }
     }
 
@@ -147,6 +119,21 @@ mod tests {
         let result = w.render_with_now(&input, now).unwrap();
         assert!(result.contains("10%"));
         assert!(result.contains("7d 0h"));
+    }
+
+    #[test]
+    fn returns_none_when_window_absent() {
+        let mut input = make_input_with_limits();
+        input.rate_limits.as_mut().unwrap().seven_day = None;
+
+        let five = RateLimit::default();
+        assert!(five.render_with_now(&input, 1774029600 - 7200).is_some());
+
+        let seven = RateLimit {
+            window: RateLimitWindowKind::SevenDay,
+            ..Default::default()
+        };
+        assert!(seven.render_with_now(&input, 0).is_none());
     }
 
     #[test]
