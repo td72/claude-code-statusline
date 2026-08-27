@@ -88,12 +88,14 @@ token_style = "compact"
 widgets = ["vim", "workspace", "git_branch"]
 separator = ""
 
-# lualine テーマ: normal=#80d8ff, insert=#c3e88d, fg=#263238
+# lualine テーマ: normal=#80d8ff, insert=#c3e88d, visual=#c792ea, fg=#263238
 [widget.vim]
 normal_bg = "117"   # #87d7ff ≈ #80d8ff
 normal_fg = "236"   # #303030 ≈ #263238
 insert_bg = "150"   # #afd787 ≈ #c3e88d
 insert_fg = "236"
+visual_bg = "176"   # #d787d7 ≈ #c792ea
+visual_fg = "236"
 
 # lualine section b: fg=#eeffff bg=#515559
 [widget.workspace]
@@ -118,7 +120,7 @@ bg = "237"
 | `git_branch` | 現在のgitブランチ (`git branch --show-current` で取得。リポジトリ外では非表示) |
 | `agent` | エージェント名 (非アクティブ時は非表示) |
 | `worktree` | ワークツリーブランチ (非アクティブ時は非表示) |
-| `vim` | Vimモード。モードごとの背景色/前景色設定に対応 (無効時は非表示) |
+| `vim` | Vimモード (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`)。モードごとの背景色/前景色設定に対応 (無効時は非表示) |
 | `context_usage` | コンテキストウィンドウ プログレスバー + トークン数 |
 | `cost_summary` | コスト、経過時間、変更行数。アイコンプレフィックス設定可能 |
 | `token_alert` | 200kトークン超過時の警告インジケータ |

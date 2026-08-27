@@ -185,7 +185,10 @@ pub struct Vim {
 
 /// Vim mode variants.
 ///
-/// Serialized as uppercase strings (`"NORMAL"`, `"INSERT"`) to match the JSON schema.
+/// Serialized as uppercase strings (`"NORMAL"`, `"INSERT"`, `"VISUAL"`,
+/// `"VISUAL LINE"`) to match the JSON schema. Any other string deserializes
+/// to [`VimMode::Unknown`] so that a new mode added by Claude Code never
+/// breaks parsing of the whole payload.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum VimMode {
@@ -193,6 +196,14 @@ pub enum VimMode {
     Normal,
     /// Insert (editing) mode.
     Insert,
+    /// Visual (character-wise selection) mode.
+    Visual,
+    /// Visual line (line-wise selection) mode.
+    #[serde(rename = "VISUAL LINE")]
+    VisualLine,
+    /// Any mode string not listed above.
+    #[serde(other)]
+    Unknown,
 }
 
 /// Agent information.
@@ -385,6 +396,20 @@ mod tests {
         assert!(input.workspace.added_dirs.is_none());
         assert!(input.context_window.used_percentage.is_none());
         assert!(input.context_window.current_usage.is_none());
+    }
+
+    #[test]
+    fn deserialize_vim_modes() {
+        for (json, expected) in [
+            (r#"{"mode":"NORMAL"}"#, VimMode::Normal),
+            (r#"{"mode":"INSERT"}"#, VimMode::Insert),
+            (r#"{"mode":"VISUAL"}"#, VimMode::Visual),
+            (r#"{"mode":"VISUAL LINE"}"#, VimMode::VisualLine),
+            (r#"{"mode":"REPLACE"}"#, VimMode::Unknown),
+        ] {
+            let vim: Vim = serde_json::from_str(json).unwrap();
+            assert_eq!(vim.mode, expected, "input: {json}");
+        }
     }
 
     #[test]

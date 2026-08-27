@@ -88,12 +88,14 @@ Use `separator = ""` with per-widget background colors (`bg`) for a lualine-styl
 widgets = ["vim", "workspace", "git_branch"]
 separator = ""
 
-# lualine theme: normal=#80d8ff, insert=#c3e88d, fg=#263238
+# lualine theme: normal=#80d8ff, insert=#c3e88d, visual=#c792ea, fg=#263238
 [widget.vim]
 normal_bg = "117"   # #87d7ff ≈ #80d8ff
 normal_fg = "236"   # #303030 ≈ #263238
 insert_bg = "150"   # #afd787 ≈ #c3e88d
 insert_fg = "236"
+visual_bg = "176"   # #d787d7 ≈ #c792ea
+visual_fg = "236"
 
 # lualine section b: fg=#eeffff bg=#515559
 [widget.workspace]
@@ -118,7 +120,7 @@ bg = "237"
 | `git_branch` | Current git branch (via `git branch --show-current`; hidden outside a repo) |
 | `agent` | Agent name (hidden when inactive) |
 | `worktree` | Worktree branch (hidden when inactive) |
-| `vim` | Vim mode with optional per-mode bg/fg colors (hidden when disabled) |
+| `vim` | Vim mode (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`) with optional per-mode bg/fg colors (hidden when disabled) |
 | `context_usage` | Context window progress bar + token counts |
 | `cost_summary` | Cost, duration, lines changed; configurable icon prefixes |
 | `token_alert` | Warning indicator when >200k tokens |

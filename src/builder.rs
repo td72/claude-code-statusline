@@ -131,8 +131,10 @@ fn build_vim_status(cfg: &WidgetConfig) -> VimStatus {
     VimStatus {
         normal_bg: cfg.normal_bg.as_deref().map(parse_color),
         insert_bg: cfg.insert_bg.as_deref().map(parse_color),
+        visual_bg: cfg.visual_bg.as_deref().map(parse_color),
         normal_fg: cfg.normal_fg.as_deref().map(parse_color),
         insert_fg: cfg.insert_fg.as_deref().map(parse_color),
+        visual_fg: cfg.visual_fg.as_deref().map(parse_color),
     }
 }
 
