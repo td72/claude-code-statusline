@@ -39,6 +39,19 @@ pub struct StatusLineInput {
     /// Unique session identifier.
     pub session_id: String,
 
+    /// Session name: the custom name set with `--name` / `/rename`, or the
+    /// AI-generated title. Absent when neither exists (the default display
+    /// name such as `my-app-3f` does not populate this field).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_name: Option<String>,
+
+    /// UUID of the user prompt currently being processed.
+    /// Absent until the first user input.
+    ///
+    /// Requires Claude Code v2.1.196 or later.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub prompt_id: Option<String>,
+
     /// Path to conversation transcript file.
     #[serde(default)]
     pub transcript_path: String,
@@ -369,6 +382,8 @@ mod tests {
         let json = r#"{
             "cwd": "/current/working/directory",
             "session_id": "abc123",
+            "session_name": "my-session",
+            "prompt_id": "550e8400-e29b-41d4-a716-446655440000",
             "transcript_path": "/path/to/transcript.jsonl",
             "model": {
                 "id": "claude-opus-4-6",
@@ -446,6 +461,8 @@ mod tests {
         let input: StatusLineInput = serde_json::from_str(json).unwrap();
 
         assert_eq!(input.cwd, "/current/working/directory");
+        assert_eq!(input.session_name.as_deref(), Some("my-session"));
+        assert_eq!(input.prompt_id.as_deref(), Some("550e8400-e29b-41d4-a716-446655440000"));
         assert_eq!(input.model.id, "claude-opus-4-6");
         assert_eq!(input.model.display_name, "Opus");
         assert_eq!(input.workspace.project_dir, "/original/project/directory");
@@ -562,6 +579,8 @@ mod tests {
 
         let input: StatusLineInput = serde_json::from_str(json).unwrap();
 
+        assert!(input.session_name.is_none());
+        assert!(input.prompt_id.is_none());
         assert!(input.effort.is_none());
         assert!(input.vim.is_none());
         assert!(input.agent.is_none());

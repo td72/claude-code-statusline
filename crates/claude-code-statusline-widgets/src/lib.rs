@@ -17,6 +17,7 @@
 //! | [`GitBranch`]      | Current git branch (via `git` CLI)           |
 //! | [`PrInfo`]         | Open pull request number with link           |
 //! | [`RepoInfo`]       | Repository owner/name with link              |
+//! | [`SessionInfo`]    | Session name                                 |
 //! | [`VimStatus`]      | Vim mode indicator                           |
 //! | [`EffortLevel`]    | Reasoning effort level                       |
 //! | [`ContextUsage`]   | Context window progress bar                  |
@@ -35,6 +36,7 @@ pub mod model_info;
 pub mod pr_info;
 pub mod rate_limit;
 pub mod repo_info;
+pub mod session_info;
 pub mod token_alert;
 pub mod vim_status;
 pub mod workspace_info;
@@ -49,6 +51,7 @@ pub use model_info::ModelInfo;
 pub use pr_info::PrInfo;
 pub use rate_limit::RateLimit;
 pub use repo_info::RepoInfo;
+pub use session_info::SessionInfo;
 pub use token_alert::TokenAlert;
 pub use vim_status::VimStatus;
 pub use workspace_info::WorkspaceInfo;

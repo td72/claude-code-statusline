@@ -60,7 +60,7 @@ widgets = ["model", "effort", "context_usage"]
 separator = " "
 
 [[line]]
-widgets = ["cost_summary"]
+widgets = ["session", "cost_summary"]
 separator = " | "
 
 [[line]]
@@ -116,6 +116,7 @@ bg = "237"
 | ウィジェット | 説明 |
 |---|---|
 | `model` | モデル名 (例: `Opus 4.6`)。`short = true` で括弧付きサフィックスを除去 |
+| `session` | `--name` / `/rename` で付けた名前、または AI 生成のセッションタイトル。`max_len` で切り詰め (名前なしなら非表示) |
 | `workspace` | 現在のディレクトリ |
 | `repo` | `origin` リモートから得たリポジトリ名をリンク付きで表示。`style = "name" \| "owner_name" \| "full"` (リポジトリ外では非表示) |
 | `git_branch` | 現在の git ブランチ (`worktree.branch` があればそれを使い、なければ `git branch --show-current`。リポジトリ外では非表示) |

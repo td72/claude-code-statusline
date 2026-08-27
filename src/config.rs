@@ -136,6 +136,11 @@ pub struct WidgetConfig {
     /// Separator text between the bar and the countdown (e.g., `" resets in "`).
     pub reset_separator: Option<String>,
 
+    // -- Session options --
+
+    /// Maximum characters for the session name (`0` disables truncation).
+    pub max_len: Option<usize>,
+
     // -- Worktree options --
 
     /// Worktree source: `"any"` (default; worktree sessions and plain

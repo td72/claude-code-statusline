@@ -16,7 +16,7 @@ separator = " "
 
 # Line 3: Session summary
 [[line]]
-widgets = ["cost_summary"]
+widgets = ["session", "cost_summary"]
 separator = " | "
 
 # Line 4: Rate limits
@@ -104,6 +104,10 @@ yellow = 70
 [widget.token_alert]
 on_text = "⚠"
 on_color = "red"
+
+[widget.session]
+prefix = "💬 "
+max_len = 24   # 0 = no truncation
 
 [widget.cost_summary]
 show_lines = true
