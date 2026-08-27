@@ -134,6 +134,12 @@ pub struct WidgetConfig {
     /// Separator text between the bar and the countdown (e.g., `" resets in "`).
     pub reset_separator: Option<String>,
 
+    // -- Link options --
+
+    /// Emit OSC 8 hyperlinks (default `true`). Set to `false` on terminals
+    /// without hyperlink support.
+    pub link: Option<bool>,
+
     // -- Value-keyed colors --
 
     /// Foreground color per value, e.g. `{ xhigh = "yellow", max = "red" }`

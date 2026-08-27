@@ -52,7 +52,7 @@ Define lines and widgets in TOML:
 ```toml
 # Each [[line]] is a row in the status bar
 [[line]]
-widgets = ["vim", "workspace", "git_branch", "worktree"]
+widgets = ["vim", "workspace", "git_branch", "pr", "worktree"]
 separator = ""
 
 [[line]]
@@ -118,6 +118,7 @@ bg = "237"
 | `model` | Model name (e.g., `Opus 4.6`); `short = true` strips parenthesized suffixes |
 | `workspace` | Current directory |
 | `git_branch` | Current git branch (via `git branch --show-current`; hidden outside a repo) |
+| `pr` | Open PR/MR number (`#123` / `!123`) as a clickable OSC 8 link; `[widget.pr.colors]` maps `review_state` to colors; `link = false` disables hyperlinks (hidden when none) |
 | `agent` | Agent name (hidden when inactive) |
 | `worktree` | Worktree branch (hidden when inactive) |
 | `vim` | Vim mode (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`) with optional per-mode bg/fg colors (hidden when disabled) |

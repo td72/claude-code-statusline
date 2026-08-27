@@ -83,6 +83,11 @@ pub struct StatusLineInput {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub agent: Option<Agent>,
 
+    /// Open pull request (or GitLab merge request) for the current branch.
+    /// Present only while one is found; removed once it merges or closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pr: Option<Pr>,
+
     /// Worktree information. Only present during `--worktree` sessions.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub worktree: Option<Worktree>,
@@ -248,6 +253,31 @@ pub struct Agent {
     pub name: String,
 }
 
+/// Open pull request / merge request for the current branch.
+///
+/// Mirrors the PR badge in the Claude Code footer.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Pr {
+    /// Pull request number (merge request number for GitLab).
+    pub number: u64,
+
+    /// URL of the pull request.
+    #[serde(default)]
+    pub url: String,
+
+    /// Review status: `"approved"`, `"pending"`, `"changes_requested"`, or
+    /// `"draft"`. May be absent even when `pr` is present.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub review_state: Option<String>,
+
+    /// `"mr"` when this describes a GitLab merge request. Absent for GitHub
+    /// pull requests.
+    ///
+    /// Requires Claude Code v2.1.234 or later.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<String>,
+}
+
 /// Worktree information.
 ///
 /// Only `name` is required; hook-based worktrees may omit the branch fields
@@ -355,6 +385,11 @@ mod tests {
             "agent": {
                 "name": "security-reviewer"
             },
+            "pr": {
+                "number": 1234,
+                "url": "https://github.com/anthropics/claude-code/pull/1234",
+                "review_state": "pending"
+            },
             "worktree": {
                 "name": "my-feature",
                 "path": "/path/to/.claude/worktrees/my-feature",
@@ -392,6 +427,11 @@ mod tests {
 
         let agent = input.agent.unwrap();
         assert_eq!(agent.name, "security-reviewer");
+
+        let pr = input.pr.unwrap();
+        assert_eq!(pr.number, 1234);
+        assert_eq!(pr.review_state.as_deref(), Some("pending"));
+        assert!(pr.kind.is_none());
 
         assert_eq!(
             input.workspace.added_dirs,
@@ -487,6 +527,7 @@ mod tests {
         assert!(input.effort.is_none());
         assert!(input.vim.is_none());
         assert!(input.agent.is_none());
+        assert!(input.pr.is_none());
         assert!(input.worktree.is_none());
         assert!(input.rate_limits.is_none());
         assert!(input.workspace.added_dirs.is_none());
