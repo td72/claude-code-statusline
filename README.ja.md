@@ -56,7 +56,7 @@ widgets = ["vim", "workspace", "git_branch", "worktree"]
 separator = ""
 
 [[line]]
-widgets = ["model", "context_usage"]
+widgets = ["model", "effort", "context_usage"]
 separator = " "
 
 [[line]]
@@ -121,6 +121,7 @@ bg = "237"
 | `agent` | エージェント名 (非アクティブ時は非表示) |
 | `worktree` | ワークツリーブランチ (非アクティブ時は非表示) |
 | `vim` | Vimモード (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`)。モードごとの背景色/前景色設定に対応 (無効時は非表示) |
+| `effort` | 推論 effort レベル (`low`〜`max`)。`[widget.effort.colors]` でレベルごとに色指定可 (非対応モデルでは非表示) |
 | `context_usage` | コンテキストウィンドウ プログレスバー + トークン数 |
 | `cost_summary` | コスト、経過時間、変更行数。アイコンプレフィックス設定可能 |
 | `token_alert` | 200kトークン超過時の警告インジケータ |

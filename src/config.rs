@@ -134,6 +134,12 @@ pub struct WidgetConfig {
     /// Separator text between the bar and the countdown (e.g., `" resets in "`).
     pub reset_separator: Option<String>,
 
+    // -- Value-keyed colors --
+
+    /// Foreground color per value, e.g. `{ xhigh = "yellow", max = "red" }`
+    /// for the `effort` widget. Overrides `color` when the value matches.
+    pub colors: Option<HashMap<String, String>>,
+
     // -- Thresholds --
 
     /// Color thresholds for progress bar coloring.
