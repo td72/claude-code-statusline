@@ -10,7 +10,7 @@ A configurable, multi-line status line for Claude Code. Reads JSON session data 
 
 ```bash
 cargo build                          # Build all crates
-cargo test --workspace               # Run all tests (120 tests across 4 crates)
+cargo test --workspace               # Run all tests (133 tests across 4 crates)
 cargo install --path .               # Install binary as `claude-code-statusline`
 
 # Test with mock input

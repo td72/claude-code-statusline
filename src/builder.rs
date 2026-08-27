@@ -116,12 +116,16 @@ fn build_session_info(cfg: &WidgetConfig) -> SessionInfo {
     }
 }
 
-fn build_workspace_info(cfg: &WidgetConfig) -> WorkspaceInfo {
-    let style = match cfg.style.as_deref() {
-        Some("full") => PathStyle::Full,
-        Some("home_shortened") => PathStyle::HomeShortened,
+fn parse_path_style(s: &str) -> PathStyle {
+    match s {
+        "full" => PathStyle::Full,
+        "home_shortened" => PathStyle::HomeShortened,
         _ => PathStyle::BaseName,
-    };
+    }
+}
+
+fn build_workspace_info(cfg: &WidgetConfig) -> WorkspaceInfo {
+    let style = cfg.style.as_deref().map(parse_path_style).unwrap_or_default();
     let has_bg = cfg.bg.is_some();
     WorkspaceInfo {
         path: Path {
@@ -131,6 +135,8 @@ fn build_workspace_info(cfg: &WidgetConfig) -> WorkspaceInfo {
             home_dir: cfg.home_dir.clone().unwrap_or_default(),
         },
         label: build_label(cfg),
+        narrow_style: cfg.narrow_style.as_deref().map(parse_path_style),
+        narrow_below: cfg.narrow_below.unwrap_or(0),
     }
 }
 

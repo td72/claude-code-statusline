@@ -82,6 +82,25 @@ show_tokens = true
 token_style = "compact"
 ```
 
+### Terminal width
+
+Claude Code passes the terminal size as `COLUMNS` / `LINES` (v2.1.153+). Each `[[line]]` can be capped so long output never collides with the notifications Claude Code draws at the right edge:
+
+```toml
+[[line]]
+widgets = ["workspace", "git_branch", "pr"]
+reserve_right = 20   # leave 20 columns free (COLUMNS - 20)
+# max_width = 80     # or an absolute cap; the smaller limit wins
+# ellipsis = "…"     # appended when truncated
+
+[widget.workspace]
+style = "home_shortened"
+narrow_style = "basename"   # switch style when COLUMNS < narrow_below
+narrow_below = 100
+```
+
+Truncation measures visible width (ANSI colors and OSC 8 links are not counted, wide characters count as 2) and never splits an escape sequence.
+
 ### Lualine-style badge layout
 
 Use `separator = ""` with per-widget background colors (`bg`) for a lualine-style appearance. ANSI 256-color codes (`"0"` -- `"255"`) are supported alongside named colors.
@@ -120,7 +139,7 @@ bg = "237"
 |---|---|
 | `model` | Model name (e.g., `Opus 5`); `short = true` strips parenthesized suffixes |
 | `session` | Session name from `--name` / `/rename` or the AI-generated title, truncated to `max_len` (hidden when unnamed) |
-| `workspace` | Current directory |
+| `workspace` | Current directory; `style = "basename" \| "home_shortened" \| "full"`, optional `narrow_style` / `narrow_below` for narrow terminals |
 | `repo` | Repository from the `origin` remote as a clickable link; `style = "name" \| "owner_name" \| "full"` (hidden outside a repo) |
 | `git_branch` | Current git branch (`worktree.branch` when available, else `git branch --show-current`; hidden outside a repo) |
 | `pr` | Open PR/MR number (`#123` / `!123`) as a clickable OSC 8 link; `[widget.pr.colors]` maps `review_state` to colors; `link = false` disables hyperlinks (hidden when none) |

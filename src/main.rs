@@ -3,7 +3,8 @@
 //! Reads a JSON payload from stdin (provided by Claude Code), loads a TOML
 //! configuration file that describes which widgets to render on each line,
 //! builds the widgets via [`builder::build_widget`], and prints the rendered
-//! lines to stdout.
+//! lines to stdout. Lines can be capped to the terminal width (`COLUMNS`,
+//! provided by Claude Code) via `max_width` / `reserve_right`.
 
 mod builder;
 mod config;
@@ -11,8 +12,9 @@ mod config;
 use std::io::Read;
 use std::process;
 
+use claude_code_statusline_components::width::{truncate_to_width, visible_width};
 use claude_code_statusline_model::StatusLineInput;
-use claude_code_statusline_widgets::Widget;
+use claude_code_statusline_widgets::{terminal, Widget};
 
 use crate::builder::build_widget;
 use crate::config::{Config, WidgetConfig};
@@ -46,6 +48,7 @@ fn main() {
     };
 
     // Render each line
+    let columns = terminal::columns();
     let empty_cfg = WidgetConfig::default();
     for line_cfg in &config.line {
         let rendered: Vec<String> = line_cfg
@@ -58,8 +61,15 @@ fn main() {
             })
             .collect();
 
-        if !rendered.is_empty() {
-            println!("{}", rendered.join(&line_cfg.separator));
+        if rendered.is_empty() {
+            continue;
         }
+        let mut line = rendered.join(&line_cfg.separator);
+        if let Some(limit) = line_cfg.width_limit(columns) {
+            if visible_width(&line) > limit {
+                line = truncate_to_width(&line, limit, &line_cfg.ellipsis);
+            }
+        }
+        println!("{line}");
     }
 }

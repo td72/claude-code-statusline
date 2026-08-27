@@ -29,8 +29,12 @@ pub struct Config {
 
 /// A single output line definition.
 ///
-/// Claude Code renders up to two lines of status; each line contains
-/// one or more widgets joined by a separator.
+/// Each line contains one or more widgets joined by a separator. A line can
+/// be capped to a visible width: `max_width` is an absolute column count,
+/// `reserve_right` subtracts from the terminal width (`COLUMNS`) so the
+/// line leaves room for Claude Code's right-aligned notifications. When
+/// both are set the smaller limit wins; with neither set the line is never
+/// truncated.
 #[derive(Debug, Deserialize)]
 pub struct LineConfig {
     /// Widget names to render on this line.
@@ -38,10 +42,35 @@ pub struct LineConfig {
     /// Separator between widgets.
     #[serde(default = "default_separator")]
     pub separator: String,
+    /// Absolute maximum visible width in columns.
+    pub max_width: Option<usize>,
+    /// Columns to keep free at the right edge of the terminal.
+    pub reserve_right: Option<usize>,
+    /// Text appended when the line is truncated.
+    #[serde(default = "default_ellipsis")]
+    pub ellipsis: String,
+}
+
+impl LineConfig {
+    /// Effective width limit for this line given the terminal width.
+    pub fn width_limit(&self, columns: Option<usize>) -> Option<usize> {
+        let from_terminal = match (columns, self.reserve_right) {
+            (Some(cols), Some(reserve)) => Some(cols.saturating_sub(reserve)),
+            _ => None,
+        };
+        match (self.max_width, from_terminal) {
+            (Some(a), Some(b)) => Some(a.min(b)),
+            (a, b) => a.or(b),
+        }
+    }
 }
 
 fn default_separator() -> String {
     " | ".to_string()
+}
+
+fn default_ellipsis() -> String {
+    "…".to_string()
 }
 
 /// Configuration for a single widget.
@@ -75,6 +104,11 @@ pub struct WidgetConfig {
     pub style: Option<String>,
     /// Explicit home directory for `home_shortened` style.
     pub home_dir: Option<String>,
+    /// Path style to switch to when the terminal is narrower than
+    /// `narrow_below` columns (`workspace` only).
+    pub narrow_style: Option<String>,
+    /// Column threshold for `narrow_style`.
+    pub narrow_below: Option<usize>,
 
     // -- ProgressBar options --
 
@@ -238,5 +272,44 @@ impl Config {
 
         // Built-in default
         toml::from_str(include_str!("../config.default.toml")).expect("default config is valid")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn line(max_width: Option<usize>, reserve_right: Option<usize>) -> LineConfig {
+        LineConfig {
+            widgets: vec![],
+            separator: String::new(),
+            max_width,
+            reserve_right,
+            ellipsis: default_ellipsis(),
+        }
+    }
+
+    #[test]
+    fn width_limit_combines_sources() {
+        assert_eq!(line(None, None).width_limit(Some(100)), None);
+        assert_eq!(line(Some(40), None).width_limit(None), Some(40));
+        assert_eq!(line(None, Some(20)).width_limit(Some(100)), Some(80));
+        assert_eq!(line(None, Some(20)).width_limit(None), None);
+        assert_eq!(line(Some(40), Some(20)).width_limit(Some(100)), Some(40));
+        assert_eq!(line(Some(90), Some(20)).width_limit(Some(100)), Some(80));
+    }
+
+    #[test]
+    fn line_config_defaults() {
+        let cfg: LineConfig = toml::from_str(r#"widgets = ["model"]"#).unwrap();
+        assert_eq!(cfg.separator, " | ");
+        assert_eq!(cfg.ellipsis, "…");
+        assert!(cfg.width_limit(Some(80)).is_none());
+    }
+
+    #[test]
+    fn default_config_parses() {
+        let cfg = Config::load_or_default(Some("/nonexistent/path.toml"));
+        assert!(!cfg.line.is_empty());
     }
 }

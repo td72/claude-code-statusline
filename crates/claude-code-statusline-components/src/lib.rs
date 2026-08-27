@@ -33,6 +33,7 @@ pub mod label;
 pub mod link;
 pub mod path;
 pub mod progress_bar;
+pub mod width;
 
 pub use count::Count;
 pub use countdown::Countdown;

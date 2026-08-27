@@ -5,9 +5,12 @@
 # Widgets that return nothing (e.g., agent when not active) are skipped.
 
 # Line 1: Where am I?
+# Claude Code draws notifications at the right edge of the row; keep
+# some columns free so a long path does not collide with them.
 [[line]]
 widgets = ["vim", "workspace", "git_branch", "pr", "worktree"]
 separator = ""
+reserve_right = 20   # columns kept free (uses $COLUMNS); max_width = N for an absolute cap
 
 # Line 2: Model + effort + flags + context
 [[line]]
@@ -39,6 +42,10 @@ visual_fg = "236"
 [widget.workspace]
 prefix = "📁 "
 style = "basename"
+# Responsive: use home_shortened on wide terminals, basename when narrow
+# style = "home_shortened"
+# narrow_style = "basename"
+# narrow_below = 100
 color = "255"
 bg = "240"
 
