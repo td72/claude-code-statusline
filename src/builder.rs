@@ -24,12 +24,13 @@ use crate::config::{parse_bracket, parse_color, WidgetConfig};
 ///
 /// # Recognized names
 ///
-/// `"model"`, `"workspace"`, `"repo"`, `"agent"`, `"worktree"`, `"git_branch"`,
+/// `"model"`, `"session"`, `"workspace"`, `"repo"`, `"agent"`, `"worktree"`, `"git_branch"`,
 /// `"pr"`, `"vim"`, `"effort"`, `"context_usage"`, `"cost_summary"`,
 /// `"token_alert"`, `"rate_limit_5h"`, `"rate_limit_7d"`.
 pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
     match name {
         "model" => Some(Box::new(build_model_info(cfg))),
+        "session" => Some(Box::new(build_session_info(cfg))),
         "workspace" => Some(Box::new(build_workspace_info(cfg))),
         "repo" => Some(Box::new(build_repo_info(cfg))),
         "agent" => Some(Box::new(build_agent_info(cfg))),
@@ -98,6 +99,17 @@ fn build_model_info(cfg: &WidgetConfig) -> ModelInfo {
     ModelInfo {
         label: build_label(cfg),
         short: cfg.short.unwrap_or(false),
+    }
+}
+
+fn build_session_info(cfg: &WidgetConfig) -> SessionInfo {
+    SessionInfo {
+        label: build_label(cfg),
+        max_len: match cfg.max_len {
+            Some(0) => None,
+            Some(n) => Some(n),
+            None => Some(24),
+        },
     }
 }
 

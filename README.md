@@ -60,7 +60,7 @@ widgets = ["model", "effort", "context_usage"]
 separator = " "
 
 [[line]]
-widgets = ["cost_summary"]
+widgets = ["session", "cost_summary"]
 separator = " | "
 
 [[line]]
@@ -116,6 +116,7 @@ bg = "237"
 | Widget | Description |
 |---|---|
 | `model` | Model name (e.g., `Opus 4.6`); `short = true` strips parenthesized suffixes |
+| `session` | Session name from `--name` / `/rename` or the AI-generated title, truncated to `max_len` (hidden when unnamed) |
 | `workspace` | Current directory |
 | `repo` | Repository from the `origin` remote as a clickable link; `style = "name" \| "owner_name" \| "full"` (hidden outside a repo) |
 | `git_branch` | Current git branch (`worktree.branch` when available, else `git branch --show-current`; hidden outside a repo) |
