@@ -25,7 +25,7 @@ pub struct EffortLevel {
 impl Default for EffortLevel {
     fn default() -> Self {
         Self {
-            label: Label { prefix: "⚡ ".into(), ..Default::default() },
+            label: Label { prefix: "🧠 ".into(), ..Default::default() },
             colors: Vec::new(),
         }
     }
@@ -64,7 +64,7 @@ mod tests {
     fn renders_level() {
         let w = EffortLevel::default();
         let input = make_input(Some("high"));
-        assert_eq!(w.render(&input).unwrap(), "⚡ high");
+        assert_eq!(w.render(&input).unwrap(), "🧠 high");
     }
 
     #[test]
@@ -78,7 +78,7 @@ mod tests {
         assert!(result.contains("max"));
 
         // unmatched level stays plain
-        assert_eq!(w.render(&make_input(Some("low"))).unwrap(), "⚡ low");
+        assert_eq!(w.render(&make_input(Some("low"))).unwrap(), "🧠 low");
     }
 
     #[test]

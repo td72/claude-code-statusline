@@ -25,8 +25,9 @@ use crate::config::{parse_bracket, parse_color, WidgetConfig};
 /// # Recognized names
 ///
 /// `"model"`, `"session"`, `"workspace"`, `"repo"`, `"agent"`, `"worktree"`, `"git_branch"`,
-/// `"pr"`, `"vim"`, `"effort"`, `"context_usage"`, `"cost_summary"`,
-/// `"token_alert"`, `"rate_limit_5h"`, `"rate_limit_7d"`.
+/// `"pr"`, `"vim"`, `"effort"`, `"fast_mode"`, `"thinking"`,
+/// `"context_usage"`, `"cost_summary"`, `"token_alert"`, `"rate_limit_5h"`,
+/// `"rate_limit_7d"`.
 pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
     match name {
         "model" => Some(Box::new(build_model_info(cfg))),
@@ -39,6 +40,8 @@ pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
         "pr" => Some(Box::new(build_pr_info(cfg))),
         "vim" => Some(Box::new(build_vim_status(cfg))),
         "effort" => Some(Box::new(build_effort_level(cfg))),
+        "fast_mode" => Some(Box::new(build_fast_mode(cfg))),
+        "thinking" => Some(Box::new(build_thinking(cfg))),
         "context_usage" => Some(Box::new(build_context_usage(cfg))),
         "cost_summary" => Some(Box::new(build_cost_summary(cfg))),
         "token_alert" => Some(Box::new(build_token_alert(cfg))),
@@ -239,14 +242,32 @@ fn build_cost_summary(cfg: &WidgetConfig) -> CostSummary {
     }
 }
 
+/// Build an [`Indicator`] from config, falling back to `defaults` for
+/// anything not configured.
+fn build_indicator(cfg: &WidgetConfig, defaults: Indicator) -> Indicator {
+    Indicator {
+        on_text: cfg.on_text.clone().unwrap_or(defaults.on_text),
+        off_text: cfg.off_text.clone().unwrap_or(defaults.off_text),
+        on_color: cfg.on_color.as_deref().map(parse_color).or(defaults.on_color),
+        off_color: defaults.off_color,
+    }
+}
+
 fn build_token_alert(cfg: &WidgetConfig) -> TokenAlert {
     TokenAlert {
-        indicator: Indicator {
-            on_text: cfg.on_text.clone().unwrap_or("⚠".into()),
-            off_text: cfg.off_text.clone().unwrap_or_default(),
-            on_color: Some(cfg.on_color.as_deref().map(parse_color).unwrap_or(Color::Red)),
-            off_color: None,
-        },
+        indicator: build_indicator(cfg, TokenAlert::default().indicator),
+    }
+}
+
+fn build_fast_mode(cfg: &WidgetConfig) -> FastMode {
+    FastMode {
+        indicator: build_indicator(cfg, FastMode::default().indicator),
+    }
+}
+
+fn build_thinking(cfg: &WidgetConfig) -> ThinkingStatus {
+    ThinkingStatus {
+        indicator: build_indicator(cfg, ThinkingStatus::default().indicator),
     }
 }
 

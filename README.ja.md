@@ -56,7 +56,7 @@ widgets = ["vim", "workspace", "git_branch", "pr", "worktree"]
 separator = ""
 
 [[line]]
-widgets = ["model", "effort", "context_usage"]
+widgets = ["model", "effort", "fast_mode", "thinking", "context_usage"]
 separator = " "
 
 [[line]]
@@ -128,6 +128,8 @@ bg = "237"
 | `context_usage` | コンテキストウィンドウ プログレスバー + トークン数 |
 | `cost_summary` | コスト、経過時間、変更行数。アイコンプレフィックス設定可能 |
 | `token_alert` | 200kトークン超過時の警告インジケータ |
+| `fast_mode` | fast mode 有効時のインジケータ。`on_text` / `off_text` / `on_color` で調整 (無効時は非表示) |
+| `thinking` | 拡張思考 (extended thinking) 有効時のインジケータ。オプションは同じ (無効時は非表示) |
 | `rate_limit_5h` | 5時間レート制限使用率 + カウントダウン |
 | `rate_limit_7d` | 7日レート制限使用率 + カウントダウン |
 

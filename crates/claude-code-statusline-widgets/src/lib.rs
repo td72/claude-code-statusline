@@ -23,6 +23,8 @@
 //! | [`ContextUsage`]   | Context window progress bar                  |
 //! | [`CostSummary`]    | Session cost, duration, and lines changed    |
 //! | [`TokenAlert`]     | 200k-token threshold warning                 |
+//! | [`FastMode`]       | Fast mode indicator                          |
+//! | [`ThinkingStatus`] | Extended thinking indicator                  |
 //! | [`RateLimit`]      | Rate limit usage bar and reset countdown     |
 
 use claude_code_statusline_model::StatusLineInput;
@@ -31,12 +33,14 @@ pub mod agent_info;
 pub mod context_usage;
 pub mod cost_summary;
 pub mod effort_level;
+pub mod fast_mode;
 pub mod git_branch;
 pub mod model_info;
 pub mod pr_info;
 pub mod rate_limit;
 pub mod repo_info;
 pub mod session_info;
+pub mod thinking;
 pub mod token_alert;
 pub mod vim_status;
 pub mod workspace_info;
@@ -46,12 +50,14 @@ pub use agent_info::AgentInfo;
 pub use context_usage::ContextUsage;
 pub use cost_summary::CostSummary;
 pub use effort_level::EffortLevel;
+pub use fast_mode::FastMode;
 pub use git_branch::GitBranch;
 pub use model_info::ModelInfo;
 pub use pr_info::PrInfo;
 pub use rate_limit::RateLimit;
 pub use repo_info::RepoInfo;
 pub use session_info::SessionInfo;
+pub use thinking::ThinkingStatus;
 pub use token_alert::TokenAlert;
 pub use vim_status::VimStatus;
 pub use workspace_info::WorkspaceInfo;
