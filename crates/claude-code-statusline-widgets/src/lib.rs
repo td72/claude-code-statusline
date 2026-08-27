@@ -16,6 +16,7 @@
 //! | [`WorktreeInfo`]   | Worktree branch/name                         |
 //! | [`GitBranch`]      | Current git branch (via `git` CLI)           |
 //! | [`VimStatus`]      | Vim mode indicator                           |
+//! | [`EffortLevel`]    | Reasoning effort level                       |
 //! | [`ContextUsage`]   | Context window progress bar                  |
 //! | [`CostSummary`]    | Session cost, duration, and lines changed    |
 //! | [`TokenAlert`]     | 200k-token threshold warning                 |
@@ -26,6 +27,7 @@ use claude_code_statusline_model::StatusLineInput;
 pub mod agent_info;
 pub mod context_usage;
 pub mod cost_summary;
+pub mod effort_level;
 pub mod git_branch;
 pub mod model_info;
 pub mod rate_limit;
@@ -37,6 +39,7 @@ pub mod worktree_info;
 pub use agent_info::AgentInfo;
 pub use context_usage::ContextUsage;
 pub use cost_summary::CostSummary;
+pub use effort_level::EffortLevel;
 pub use git_branch::GitBranch;
 pub use model_info::ModelInfo;
 pub use rate_limit::RateLimit;

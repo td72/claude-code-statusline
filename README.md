@@ -56,7 +56,7 @@ widgets = ["vim", "workspace", "git_branch", "worktree"]
 separator = ""
 
 [[line]]
-widgets = ["model", "context_usage"]
+widgets = ["model", "effort", "context_usage"]
 separator = " "
 
 [[line]]
@@ -121,6 +121,7 @@ bg = "237"
 | `agent` | Agent name (hidden when inactive) |
 | `worktree` | Worktree branch (hidden when inactive) |
 | `vim` | Vim mode (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`) with optional per-mode bg/fg colors (hidden when disabled) |
+| `effort` | Reasoning effort level (`low`–`max`); `[widget.effort.colors]` maps levels to colors (hidden when unsupported) |
 | `context_usage` | Context window progress bar + token counts |
 | `cost_summary` | Cost, duration, lines changed; configurable icon prefixes |
 | `token_alert` | Warning indicator when >200k tokens |

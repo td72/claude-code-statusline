@@ -22,8 +22,8 @@ use crate::config::{parse_bracket, parse_color, WidgetConfig};
 /// # Recognized names
 ///
 /// `"model"`, `"workspace"`, `"agent"`, `"worktree"`, `"git_branch"`,
-/// `"vim"`, `"context_usage"`, `"cost_summary"`, `"token_alert"`,
-/// `"rate_limit_5h"`, `"rate_limit_7d"`.
+/// `"vim"`, `"effort"`, `"context_usage"`, `"cost_summary"`,
+/// `"token_alert"`, `"rate_limit_5h"`, `"rate_limit_7d"`.
 pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
     match name {
         "model" => Some(Box::new(build_model_info(cfg))),
@@ -32,6 +32,7 @@ pub fn build_widget(name: &str, cfg: &WidgetConfig) -> Option<Box<dyn Widget>> {
         "worktree" => Some(Box::new(build_worktree_info(cfg))),
         "git_branch" => Some(Box::new(build_git_branch(cfg))),
         "vim" => Some(Box::new(build_vim_status(cfg))),
+        "effort" => Some(Box::new(build_effort_level(cfg))),
         "context_usage" => Some(Box::new(build_context_usage(cfg))),
         "cost_summary" => Some(Box::new(build_cost_summary(cfg))),
         "token_alert" => Some(Box::new(build_token_alert(cfg))),
@@ -135,6 +136,26 @@ fn build_vim_status(cfg: &WidgetConfig) -> VimStatus {
         normal_fg: cfg.normal_fg.as_deref().map(parse_color),
         insert_fg: cfg.insert_fg.as_deref().map(parse_color),
         visual_fg: cfg.visual_fg.as_deref().map(parse_color),
+    }
+}
+
+/// Convert the `colors` table into `(value, Color)` pairs, sorted by key
+/// for deterministic output.
+fn build_value_colors(cfg: &WidgetConfig) -> Vec<(String, Color)> {
+    let mut colors: Vec<(String, Color)> = cfg
+        .colors
+        .iter()
+        .flatten()
+        .map(|(k, v)| (k.clone(), parse_color(v)))
+        .collect();
+    colors.sort_by(|a, b| a.0.cmp(&b.0));
+    colors
+}
+
+fn build_effort_level(cfg: &WidgetConfig) -> EffortLevel {
+    EffortLevel {
+        label: build_label(cfg),
+        colors: build_value_colors(cfg),
     }
 }
 

@@ -70,6 +70,11 @@ pub struct StatusLineInput {
     #[serde(default)]
     pub exceeds_200k_tokens: bool,
 
+    /// Reasoning effort level. Only present when the current model supports
+    /// the effort parameter. Reflects live `/effort` changes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub effort: Option<Effort>,
+
     /// Vim mode information. Only present when vim mode is enabled.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vim: Option<Vim>,
@@ -195,6 +200,14 @@ pub struct CurrentUsage {
 
     /// Tokens read from cache.
     pub cache_read_input_tokens: u64,
+}
+
+/// Reasoning effort configuration.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Effort {
+    /// Effort level: `"low"`, `"medium"`, `"high"`, `"xhigh"`, or `"max"`.
+    /// Ultracode is not a distinct level and reports as `"xhigh"`.
+    pub level: String,
 }
 
 /// Vim mode information.
@@ -333,6 +346,9 @@ mod tests {
                 }
             },
             "exceeds_200k_tokens": false,
+            "effort": {
+                "level": "high"
+            },
             "vim": {
                 "mode": "NORMAL"
             },
@@ -368,6 +384,8 @@ mod tests {
         assert_eq!(input.context_window.context_window_size, 200000);
         assert_eq!(input.context_window.used_percentage, Some(8.0));
         assert!(!input.exceeds_200k_tokens);
+
+        assert_eq!(input.effort.unwrap().level, "high");
 
         let vim = input.vim.unwrap();
         assert_eq!(vim.mode, VimMode::Normal);
@@ -466,6 +484,7 @@ mod tests {
 
         let input: StatusLineInput = serde_json::from_str(json).unwrap();
 
+        assert!(input.effort.is_none());
         assert!(input.vim.is_none());
         assert!(input.agent.is_none());
         assert!(input.worktree.is_none());
