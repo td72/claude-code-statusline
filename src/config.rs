@@ -67,9 +67,11 @@ pub struct WidgetConfig {
     /// When `true`, strip parenthesized suffixes from the model display name.
     pub short: Option<bool>,
 
-    // -- Path options --
+    // -- Path / Repo options --
 
-    /// Path display style: `"full"`, `"home_shortened"`, or `"basename"` (default).
+    /// Display style. For `workspace`: `"full"`, `"home_shortened"`, or
+    /// `"basename"` (default). For `repo`: `"name"`, `"owner_name"`
+    /// (default), or `"full"`.
     pub style: Option<String>,
     /// Explicit home directory for `home_shortened` style.
     pub home_dir: Option<String>,

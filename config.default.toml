@@ -42,6 +42,15 @@ style = "basename"
 color = "255"
 bg = "240"
 
+# Repository owner/name as a clickable link.
+# Not in a [[line]] by default; add "repo" to one to enable it.
+[widget.repo]
+prefix = " "
+style = "owner_name"   # name | owner_name | full
+color = "255"
+bg = "240"
+link = true
+
 # lualine section c: fg=#eeffff bg=#2E3C43
 [widget.git_branch]
 prefix = " "

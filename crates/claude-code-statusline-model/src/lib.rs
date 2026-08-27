@@ -126,6 +126,27 @@ pub struct Workspace {
     /// Added in v2.1.47.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub added_dirs: Option<Vec<String>>,
+
+    /// Repository identity parsed from the `origin` remote.
+    /// Absent outside a git repository or when no `origin` remote is configured.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub repo: Option<Repo>,
+}
+
+/// Repository identity parsed from the `origin` remote.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Repo {
+    /// Host name (e.g., `"github.com"`).
+    #[serde(default)]
+    pub host: String,
+
+    /// Repository owner (e.g., `"anthropics"`).
+    #[serde(default)]
+    pub owner: String,
+
+    /// Repository name (e.g., `"claude-code"`).
+    #[serde(default)]
+    pub name: String,
 }
 
 /// Current output style configuration.
@@ -349,7 +370,12 @@ mod tests {
             "workspace": {
                 "current_dir": "/current/working/directory",
                 "project_dir": "/original/project/directory",
-                "added_dirs": ["/extra/dir1", "/extra/dir2"]
+                "added_dirs": ["/extra/dir1", "/extra/dir2"],
+                "repo": {
+                    "host": "github.com",
+                    "owner": "anthropics",
+                    "name": "claude-code"
+                }
             },
             "version": "1.0.80",
             "output_style": {
@@ -437,6 +463,9 @@ mod tests {
             input.workspace.added_dirs,
             Some(vec!["/extra/dir1".to_string(), "/extra/dir2".to_string()])
         );
+        let repo = input.workspace.repo.unwrap();
+        assert_eq!((repo.host.as_str(), repo.owner.as_str(), repo.name.as_str()),
+                   ("github.com", "anthropics", "claude-code"));
 
         let worktree = input.worktree.unwrap();
         assert_eq!(worktree.name, "my-feature");
@@ -531,6 +560,7 @@ mod tests {
         assert!(input.worktree.is_none());
         assert!(input.rate_limits.is_none());
         assert!(input.workspace.added_dirs.is_none());
+        assert!(input.workspace.repo.is_none());
         assert!(input.context_window.used_percentage.is_none());
         assert!(input.context_window.current_usage.is_none());
     }
@@ -562,7 +592,7 @@ mod tests {
             workspace: Workspace {
                 current_dir: "/test".to_string(),
                 project_dir: "/test".to_string(),
-                added_dirs: None,
+                ..Default::default()
             },
             version: "1.0.0".to_string(),
             output_style: OutputStyle {
