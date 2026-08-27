@@ -9,9 +9,9 @@
 widgets = ["vim", "workspace", "git_branch", "pr", "worktree"]
 separator = ""
 
-# Line 2: Model + effort + context
+# Line 2: Model + effort + flags + context
 [[line]]
-widgets = ["model", "effort", "context_usage"]
+widgets = ["model", "effort", "fast_mode", "thinking", "context_usage"]
 separator = " "
 
 # Line 3: Session summary
@@ -81,13 +81,20 @@ short = true
 color = "255"
 
 [widget.effort]
-prefix = "⚡ "
+prefix = "🧠 "
 color = "255"
 
 # Highlight the expensive levels
 [widget.effort.colors]
 xhigh = "yellow"
 max = "red"
+
+[widget.fast_mode]
+on_text = "⚡ fast"
+on_color = "yellow"
+
+[widget.thinking]
+on_text = "💭"
 
 [widget.context_usage]
 bar_width = 10

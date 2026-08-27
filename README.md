@@ -56,7 +56,7 @@ widgets = ["vim", "workspace", "git_branch", "pr", "worktree"]
 separator = ""
 
 [[line]]
-widgets = ["model", "effort", "context_usage"]
+widgets = ["model", "effort", "fast_mode", "thinking", "context_usage"]
 separator = " "
 
 [[line]]
@@ -128,6 +128,8 @@ bg = "237"
 | `context_usage` | Context window progress bar + token counts |
 | `cost_summary` | Cost, duration, lines changed; configurable icon prefixes |
 | `token_alert` | Warning indicator when >200k tokens |
+| `fast_mode` | Indicator while fast mode is on; `on_text` / `off_text` / `on_color` (hidden when off) |
+| `thinking` | Indicator while extended thinking is on; same options (hidden when off) |
 | `rate_limit_5h` | 5-hour rate limit usage + countdown |
 | `rate_limit_7d` | 7-day rate limit usage + countdown |
 
