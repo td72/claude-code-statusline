@@ -127,6 +127,13 @@ pub struct Workspace {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub added_dirs: Option<Vec<String>>,
 
+    /// Git worktree name when the current directory is inside a linked
+    /// worktree created with `git worktree add`. Absent in the main working
+    /// tree. Unlike [`StatusLineInput::worktree`], this is populated for any
+    /// git worktree, not only worktree sessions.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub git_worktree: Option<String>,
+
     /// Repository identity parsed from the `origin` remote.
     /// Absent outside a git repository or when no `origin` remote is configured.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -371,6 +378,7 @@ mod tests {
                 "current_dir": "/current/working/directory",
                 "project_dir": "/original/project/directory",
                 "added_dirs": ["/extra/dir1", "/extra/dir2"],
+                "git_worktree": "feature-xyz",
                 "repo": {
                     "host": "github.com",
                     "owner": "anthropics",
@@ -463,6 +471,7 @@ mod tests {
             input.workspace.added_dirs,
             Some(vec!["/extra/dir1".to_string(), "/extra/dir2".to_string()])
         );
+        assert_eq!(input.workspace.git_worktree.as_deref(), Some("feature-xyz"));
         let repo = input.workspace.repo.unwrap();
         assert_eq!((repo.host.as_str(), repo.owner.as_str(), repo.name.as_str()),
                    ("github.com", "anthropics", "claude-code"));
@@ -561,6 +570,7 @@ mod tests {
         assert!(input.rate_limits.is_none());
         assert!(input.workspace.added_dirs.is_none());
         assert!(input.workspace.repo.is_none());
+        assert!(input.workspace.git_worktree.is_none());
         assert!(input.context_window.used_percentage.is_none());
         assert!(input.context_window.current_usage.is_none());
     }

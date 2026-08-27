@@ -71,6 +71,7 @@ draft = "245"
 
 [widget.worktree]
 prefix = "🌲 "
+source = "any"   # any | session
 color = "255"
 bg = "237"
 

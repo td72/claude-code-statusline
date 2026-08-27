@@ -136,6 +136,12 @@ pub struct WidgetConfig {
     /// Separator text between the bar and the countdown (e.g., `" resets in "`).
     pub reset_separator: Option<String>,
 
+    // -- Worktree options --
+
+    /// Worktree source: `"any"` (default; worktree sessions and plain
+    /// `git worktree add` worktrees) or `"session"` (worktree sessions only).
+    pub source: Option<String>,
+
     // -- Link options --
 
     /// Emit OSC 8 hyperlinks (default `true`). Set to `false` on terminals

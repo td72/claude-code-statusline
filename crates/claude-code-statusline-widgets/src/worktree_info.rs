@@ -1,34 +1,58 @@
 //! Worktree information widget.
 //!
-//! Displays the active worktree's branch name (preferred) or its name as a
-//! fallback. Returns `None` when no worktree session is active.
+//! Displays the active worktree session's branch name (preferred) or its
+//! name as a fallback. With [`WorktreeSource::Any`] (the default) it also
+//! shows `workspace.git_worktree`, which Claude Code populates for any
+//! linked worktree created with `git worktree add`, not only for worktree
+//! sessions. Returns `None` when neither is present.
 
 use claude_code_statusline_components::label::Label;
 use claude_code_statusline_model::StatusLineInput;
 
 use crate::Widget;
 
+/// Which inputs the worktree widget reads.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub enum WorktreeSource {
+    /// `worktree.*` (worktree sessions) first, then `workspace.git_worktree`.
+    #[default]
+    Any,
+    /// Only `worktree.*`; ignore plain git worktrees.
+    Session,
+}
+
 /// Widget for displaying worktree information.
 ///
-/// Shows the branch name if available, otherwise the worktree name.
+/// For a worktree session, shows the branch name if available, otherwise
+/// the worktree name. Otherwise (with [`WorktreeSource::Any`]) shows the
+/// linked git worktree name from `workspace.git_worktree`.
 pub struct WorktreeInfo {
     /// Label formatter.
     pub label: Label,
+    /// Which inputs to read.
+    pub source: WorktreeSource,
 }
 
 impl Default for WorktreeInfo {
     fn default() -> Self {
         Self {
             label: Label { prefix: "🌲 ".into(), ..Default::default() },
+            source: WorktreeSource::default(),
         }
     }
 }
 
 impl Widget for WorktreeInfo {
     fn render(&self, input: &StatusLineInput) -> Option<String> {
-        let wt = input.worktree.as_ref()?;
-        let display_name = wt.branch.as_deref().unwrap_or(&wt.name);
-        Some(self.label.render(display_name))
+        if let Some(wt) = input.worktree.as_ref() {
+            let display_name = wt.branch.as_deref().unwrap_or(&wt.name);
+            return Some(self.label.render(display_name));
+        }
+        if self.source == WorktreeSource::Session {
+            return None;
+        }
+        let name = input.workspace.git_worktree.as_deref()?;
+        Some(self.label.render(name))
     }
 }
 
@@ -77,5 +101,33 @@ mod tests {
         let w = WorktreeInfo::default();
         let input = make_input(None);
         assert!(w.render(&input).is_none());
+    }
+
+    fn make_git_worktree_input(name: &str) -> StatusLineInput {
+        StatusLineInput {
+            workspace: Workspace { git_worktree: Some(name.into()), ..Default::default() },
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn falls_back_to_git_worktree() {
+        let w = WorktreeInfo::default();
+        let result = w.render(&make_git_worktree_input("feature-xyz")).unwrap();
+        assert!(result.contains("feature-xyz"));
+    }
+
+    #[test]
+    fn session_source_ignores_git_worktree() {
+        let w = WorktreeInfo { source: WorktreeSource::Session, ..Default::default() };
+        assert!(w.render(&make_git_worktree_input("feature-xyz")).is_none());
+    }
+
+    #[test]
+    fn session_worktree_wins_over_git_worktree() {
+        let w = WorktreeInfo::default();
+        let mut input = make_git_worktree_input("plain");
+        input.worktree = Some(Worktree { name: "session".into(), ..Default::default() });
+        assert!(w.render(&input).unwrap().contains("session"));
     }
 }

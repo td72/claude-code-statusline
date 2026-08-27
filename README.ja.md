@@ -118,10 +118,10 @@ bg = "237"
 | `model` | モデル名 (例: `Opus 4.6`)。`short = true` で括弧付きサフィックスを除去 |
 | `workspace` | 現在のディレクトリ |
 | `repo` | `origin` リモートから得たリポジトリ名をリンク付きで表示。`style = "name" \| "owner_name" \| "full"` (リポジトリ外では非表示) |
-| `git_branch` | 現在のgitブランチ (`git branch --show-current` で取得。リポジトリ外では非表示) |
+| `git_branch` | 現在の git ブランチ (`worktree.branch` があればそれを使い、なければ `git branch --show-current`。リポジトリ外では非表示) |
 | `pr` | オープン中の PR/MR 番号 (`#123` / `!123`) を OSC 8 リンクで表示。`[widget.pr.colors]` で `review_state` ごとに色指定、`link = false` でリンク無効化 (PR なしなら非表示) |
 | `agent` | エージェント名 (非アクティブ時は非表示) |
-| `worktree` | ワークツリーブランチ (非アクティブ時は非表示) |
+| `worktree` | worktree のブランチ/名前。`source = "any"` (デフォルト) は通常の `git worktree add` も表示、`"session"` は `--worktree` セッションのみ (非アクティブ時は非表示) |
 | `vim` | Vimモード (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`)。モードごとの背景色/前景色設定に対応 (無効時は非表示) |
 | `effort` | 推論 effort レベル (`low`〜`max`)。`[widget.effort.colors]` でレベルごとに色指定可 (非対応モデルでは非表示) |
 | `context_usage` | コンテキストウィンドウ プログレスバー + トークン数 |

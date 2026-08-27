@@ -118,10 +118,10 @@ bg = "237"
 | `model` | Model name (e.g., `Opus 4.6`); `short = true` strips parenthesized suffixes |
 | `workspace` | Current directory |
 | `repo` | Repository from the `origin` remote as a clickable link; `style = "name" \| "owner_name" \| "full"` (hidden outside a repo) |
-| `git_branch` | Current git branch (via `git branch --show-current`; hidden outside a repo) |
+| `git_branch` | Current git branch (`worktree.branch` when available, else `git branch --show-current`; hidden outside a repo) |
 | `pr` | Open PR/MR number (`#123` / `!123`) as a clickable OSC 8 link; `[widget.pr.colors]` maps `review_state` to colors; `link = false` disables hyperlinks (hidden when none) |
 | `agent` | Agent name (hidden when inactive) |
-| `worktree` | Worktree branch (hidden when inactive) |
+| `worktree` | Worktree branch/name; `source = "any"` (default) also shows plain `git worktree add` worktrees, `"session"` only `--worktree` sessions (hidden when inactive) |
 | `vim` | Vim mode (`NORMAL` / `INSERT` / `VISUAL` / `V-LINE`) with optional per-mode bg/fg colors (hidden when disabled) |
 | `effort` | Reasoning effort level (`low`–`max`); `[widget.effort.colors]` maps levels to colors (hidden when unsupported) |
 | `context_usage` | Context window progress bar + token counts |
