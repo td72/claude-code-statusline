@@ -82,6 +82,25 @@ show_tokens = true
 token_style = "compact"
 ```
 
+### 端末幅
+
+Claude Code は端末サイズを `COLUMNS` / `LINES` 環境変数で渡します (v2.1.153+)。各 `[[line]]` に上限を設定すると、右端に描画される通知と長い出力が衝突しなくなります:
+
+```toml
+[[line]]
+widgets = ["workspace", "git_branch", "pr"]
+reserve_right = 20   # 右端に 20 桁空ける (COLUMNS - 20)
+# max_width = 80     # または絶対値。小さい方が優先
+# ellipsis = "…"     # 切り詰め時に付加
+
+[widget.workspace]
+style = "home_shortened"
+narrow_style = "basename"   # COLUMNS < narrow_below のときこのスタイルに切替
+narrow_below = 100
+```
+
+切り詰めは表示幅で計算します (ANSI カラーや OSC 8 リンクは数えず、全角文字は 2 桁)。エスケープシーケンスの途中で切れることはありません。
+
 ### lualineスタイルのバッジレイアウト
 
 `separator = ""` とウィジェットごとの背景色（`bg`）を使うことで、lualineスタイルの外観を実現できます。名前付きカラーに加えて、ANSI 256色コード（`"0"` -- `"255"`）もサポートしています。
@@ -120,7 +139,7 @@ bg = "237"
 |---|---|
 | `model` | モデル名 (例: `Opus 5`)。`short = true` で括弧付きサフィックスを除去 |
 | `session` | `--name` / `/rename` で付けた名前、または AI 生成のセッションタイトル。`max_len` で切り詰め (名前なしなら非表示) |
-| `workspace` | 現在のディレクトリ |
+| `workspace` | 現在のディレクトリ。`style = "basename" \| "home_shortened" \| "full"`、狭い端末向けに `narrow_style` / `narrow_below` を指定可 |
 | `repo` | `origin` リモートから得たリポジトリ名をリンク付きで表示。`style = "name" \| "owner_name" \| "full"` (リポジトリ外では非表示) |
 | `git_branch` | 現在の git ブランチ (`worktree.branch` があればそれを使い、なければ `git branch --show-current`。リポジトリ外では非表示) |
 | `pr` | オープン中の PR/MR 番号 (`#123` / `!123`) を OSC 8 リンクで表示。`[widget.pr.colors]` で `review_state` ごとに色指定、`link = false` でリンク無効化 (PR なしなら非表示) |

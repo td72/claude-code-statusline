@@ -40,6 +40,7 @@ pub mod pr_info;
 pub mod rate_limit;
 pub mod repo_info;
 pub mod session_info;
+pub mod terminal;
 pub mod thinking;
 pub mod token_alert;
 pub mod vim_status;
