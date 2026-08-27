@@ -26,12 +26,14 @@ separator = "   "
 
 # Widget configurations
 
-# lualine theme: normal=#80d8ff, insert=#c3e88d, fg=#263238
+# lualine theme: normal=#80d8ff, insert=#c3e88d, visual=#c792ea, fg=#263238
 [widget.vim]
 normal_bg = "117"   # #87d7ff ≈ #80d8ff
 normal_fg = "236"   # #303030 ≈ #263238
 insert_bg = "150"   # #afd787 ≈ #c3e88d
 insert_fg = "236"
+visual_bg = "176"   # #d787d7 ≈ #c792ea
+visual_fg = "236"
 
 # lualine section b: fg=#eeffff bg=#515559
 [widget.workspace]

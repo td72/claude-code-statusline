@@ -118,10 +118,14 @@ pub struct WidgetConfig {
     pub normal_bg: Option<String>,
     /// Background color for INSERT mode.
     pub insert_bg: Option<String>,
+    /// Background color for VISUAL / VISUAL LINE modes.
+    pub visual_bg: Option<String>,
     /// Foreground color for NORMAL mode.
     pub normal_fg: Option<String>,
     /// Foreground color for INSERT mode.
     pub insert_fg: Option<String>,
+    /// Foreground color for VISUAL / VISUAL LINE modes.
+    pub visual_fg: Option<String>,
 
     // -- RateLimit options --
 
