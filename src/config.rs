@@ -86,6 +86,8 @@ pub struct WidgetConfig {
     pub color: Option<String>,
     /// Background color name.
     pub bg: Option<String>,
+    /// Render the widget label in bold (default `false`).
+    pub bold: Option<bool>,
     /// Bracket style: `"square"`, `"round"`, `"angle"`, or `"none"`.
     pub bracket: Option<String>,
     /// Prefix text/icon prepended to the widget output.

@@ -122,6 +122,7 @@ on_color = "red"
 [widget.session]
 prefix = "💬 "
 max_len = 24   # 0 = no truncation
+# bold = true  # emphasize the name (works on any label-style widget)
 
 [widget.cost_summary]
 show_lines = true

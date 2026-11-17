@@ -5,7 +5,7 @@
 //!
 //! Typical data sources: `model.display_name`, `agent.name`, `vim.mode`, etc.
 
-use crate::color::{Color, RESET};
+use crate::color::{Color, BOLD, RESET};
 
 /// Configuration for label formatting.
 ///
@@ -35,6 +35,8 @@ pub struct Label {
     pub prefix: String,
     /// Add spaces around the text when bg is set (badge style).
     pub pad: bool,
+    /// Render the label in bold.
+    pub bold: bool,
 }
 
 /// Bracket style for wrapping label text.
@@ -56,6 +58,7 @@ impl Default for Label {
             bracket: None,
             prefix: String::new(),
             pad: false,
+            bold: false,
         }
     }
 }
@@ -75,8 +78,11 @@ impl Label {
             None => text.to_string(),
         };
 
-        let has_color = self.color.is_some() || self.bg.is_some();
-        if has_color {
+        let styled = self.color.is_some() || self.bg.is_some() || self.bold;
+        if styled {
+            if self.bold {
+                out.push_str(BOLD);
+            }
             if let Some(bg) = self.bg {
                 out.push_str(&bg.bg_string());
             }
@@ -108,6 +114,24 @@ impl Label {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bold_label() {
+        let l = Label { bold: true, ..Default::default() };
+        assert_eq!(l.render("Opus"), "\x1b[1mOpus\x1b[0m");
+    }
+
+    #[test]
+    fn bold_badge_label() {
+        let l = Label {
+            color: Some(Color::Ansi256(236)),
+            bg: Some(Color::Ansi256(179)),
+            pad: true,
+            bold: true,
+            ..Default::default()
+        };
+        assert_eq!(l.render("x"), "\x1b[1m\x1b[48;5;179m\x1b[38;5;236m x \x1b[0m");
+    }
 
     #[test]
     fn plain_label() {
