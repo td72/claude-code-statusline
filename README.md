@@ -103,7 +103,7 @@ Truncation measures visible width (ANSI colors and OSC 8 links are not counted, 
 
 ### Lualine-style badge layout
 
-Use `separator = ""` with per-widget background colors (`bg`) for a lualine-style appearance. ANSI 256-color codes (`"0"` -- `"255"`) are supported alongside named colors.
+Use `separator = ""` with per-widget background colors (`bg`) for a lualine-style appearance. ANSI 256-color codes (`"0"` -- `"255"`) are supported alongside named colors. Set `bold = true` on a label-style widget to render it in bold.
 
 ```toml
 [[line]]

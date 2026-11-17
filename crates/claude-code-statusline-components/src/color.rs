@@ -96,6 +96,9 @@ impl Color {
 /// ANSI reset sequence.
 pub const RESET: &str = "\x1b[0m";
 
+/// ANSI bold (increased intensity) sequence.
+pub const BOLD: &str = "\x1b[1m";
+
 /// Wrap text with a foreground color and append an ANSI reset.
 ///
 /// This is a convenience function that handles both standard colors and

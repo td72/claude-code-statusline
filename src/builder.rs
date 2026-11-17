@@ -62,6 +62,7 @@ fn build_label(cfg: &WidgetConfig) -> Label {
         bracket: cfg.bracket.as_deref().and_then(parse_bracket),
         prefix: cfg.prefix.clone().unwrap_or_default(),
         pad: has_bg,
+        bold: cfg.bold.unwrap_or(false),
     }
 }
 
